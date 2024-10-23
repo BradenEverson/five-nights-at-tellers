@@ -1,16 +1,97 @@
 //! The Game State Machine Definition, Creates a Game Session with a number of enemies, a target
 //! "time" to survive to, how many ticks create this time, and current door metadata
 
-use enemies::Freak;
+use std::collections::HashMap;
+
+use enemies::{EnemyId, Freak};
+use rand::{rngs::ThreadRng, thread_rng, Rng};
+use slotmap::SlotMap;
 
 pub mod enemies;
 
 /// A room's ID
 pub type RoomId = usize;
 
+
+/// The full driver for a game responsible for holding both the enemies and the game state
+pub struct Game<RNG: Rng> {
+    /// All enemies that exist in the game
+    enemies: SlotMap<EnemyId, Freak>,
+    /// The actual game's state
+    state: GameState,
+    /// The random number generation
+    rng: RNG
+}
+
+impl Default for Game<ThreadRng> {
+    fn default() -> Self {
+        let rng = thread_rng();
+        let state = GameState::default();
+        let enemies: SlotMap<EnemyId, Freak> = SlotMap::default();
+
+        Self { enemies, state, rng }
+    }
+}
+
+impl<RNG: Rng> Game<RNG> {
+    /// Ticks the game forward
+    pub fn tick(&mut self) {
+        self.state.tick(&mut self.enemies, &mut self.rng)
+    }
+}
+
 /// The game's internal state, responsible for keeping track of what enemies we have, where they
 /// are, if our doors are closed, what time it is, etc!
 pub struct GameState {
-    /// All enemies that exist in this game
-    enemies: Vec<Freak>
+    /// The currently registered cooldown times for each enemy
+    cooldowns: HashMap<EnemyId, u64>,
+    /// The current time
+    ticks: u64,
+}
+
+impl Default for GameState {
+    fn default() -> Self {
+        Self { cooldowns: HashMap::new(), ticks: 0 }
+    }
+}
+
+impl GameState {
+    /// Ticks through all enemy behaviors if it's time
+    pub fn tick<RNG: Rng> (&mut self, enemies: &mut SlotMap<EnemyId, Freak>, rng: &mut RNG) {
+        self.ticks += 1;
+
+        for (id, enemy) in enemies {
+            if let Some(time) = self.cooldowns.get(&id) {
+                if self.ticks % time == 0 {
+                    // It's action time
+                    enemy.tick(self);
+                }
+            } else {
+                let new_cooldown = enemy.gen_cooldown(rng);
+                self.cooldowns.insert(id, new_cooldown);
+            }
+        }
+    }
+
+    /// Moves an enemy from their current room to the desired room if possible
+    pub(crate) fn move_enemy(&mut self, freak: EnemyId, to: RoomId) {
+        todo!()
+    }
+
+    /// Attacks with a given enemy if possible
+    pub(crate) fn attack(&mut self, attacker: EnemyId) {
+        todo!()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::Game;
+
+    #[test]
+    fn gameplay_ticks_work() {
+        let mut game = Game::default();
+        game.tick();
+        game.tick();
+    }
 }
