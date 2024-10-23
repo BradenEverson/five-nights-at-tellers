@@ -1,5 +1,7 @@
 //! Map and Room Layout information
 
+use std::collections::{HashSet, VecDeque};
+
 use slotmap::{new_key_type, SlotMap};
 
 use crate::enemies::EnemyId;
@@ -43,6 +45,11 @@ impl Map {
             .map(|(id, _)| id)
     }
 
+    /// Registers an initial enemy to be in a starting room
+    pub fn register_enemy(&mut self, enemy: EnemyId, room: RoomId) {
+        self.0[room].move_into(enemy);
+    }
+
     /// Generates a new layout, returning the ID of the office room
     pub fn generate(&mut self) -> RootRoomInfo {
         let office = Room::default();
@@ -68,7 +75,28 @@ impl Map {
 
     /// Creates a path from one room to another room
     pub fn generate_path(&self, from: RoomId, to: RoomId) -> Option<Vec<RoomId>> {
-        todo!()
+        let mut search_queue = VecDeque::new();
+        let mut seen = HashSet::new();
+
+        search_queue.push_front(from);
+
+        while let Some(check_room) = search_queue.pop_back() {
+            if !seen.insert(check_room) {
+                continue;
+            }
+
+            if check_room == to {
+                // TODO: Right now we basically just return *if* a path exists, not what it is.
+                // Will probably need to get recursive and weird with it
+                return Some(vec![])
+            }
+
+            for room in &self.0[check_room].conencts_to {
+                search_queue.push_front(*room)
+            }
+        }
+
+        None
     }
 
     /// Disables a room's camera
