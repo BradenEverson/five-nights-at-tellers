@@ -4,13 +4,13 @@
 use std::collections::HashMap;
 
 use enemies::{EnemyId, Freak};
+use map::{Map, RoomId};
 use rand::{rngs::ThreadRng, thread_rng, Rng};
 use slotmap::SlotMap;
 
 pub mod enemies;
+pub mod map;
 
-/// A room's ID
-pub type RoomId = usize;
 
 
 /// The full driver for a game responsible for holding both the enemies and the game state
@@ -38,21 +38,19 @@ impl<RNG: Rng> Game<RNG> {
     pub fn tick(&mut self) {
         self.state.tick(&mut self.enemies, &mut self.rng)
     }
+
 }
 
 /// The game's internal state, responsible for keeping track of what enemies we have, where they
 /// are, if our doors are closed, what time it is, etc!
+#[derive(Default)]
 pub struct GameState {
     /// The currently registered cooldown times for each enemy
     cooldowns: HashMap<EnemyId, u64>,
     /// The current time
     ticks: u64,
-}
-
-impl Default for GameState {
-    fn default() -> Self {
-        Self { cooldowns: HashMap::new(), ticks: 0 }
-    }
+    /// The map as graph-like structure
+    map: Map,
 }
 
 impl GameState {
@@ -64,7 +62,7 @@ impl GameState {
             if let Some(time) = self.cooldowns.get(&id) {
                 if self.ticks % time == 0 {
                     // It's action time
-                    enemy.tick(self);
+                    enemy.tick(id, self);
                 }
             } else {
                 let new_cooldown = enemy.gen_cooldown(rng);

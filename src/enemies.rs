@@ -18,8 +18,6 @@ new_key_type! {
 
 /// An enemy and all of its related behavioral metadata
 pub struct Freak {
-    /// The enemy's ID
-    id: EnemyId,
     /// The enemy's name
     name: &'static str,
     /// The enemies state, whether they're on the move or not
@@ -33,8 +31,8 @@ pub struct Freak {
 
 impl Freak {
     /// Creates a new enemy
-    pub fn new(id: EnemyId, name: &'static str, cooldown: Range<u64>, behavior: Box<dyn EnemyBehavior>) -> Self {
-        Self { id, name, state: State::Dormant, cooldown, behavior }
+    pub fn new(name: &'static str, cooldown: Range<u64>, behavior: Box<dyn EnemyBehavior>) -> Self {
+        Self { name, state: State::Dormant, cooldown, behavior }
     }
 
     /// Returns the enemy's name
@@ -44,7 +42,7 @@ impl Freak {
 
     /// When it's an enemies turn, goes through all of the logic and game mutation given that
     /// generated Action
-    pub fn tick(&mut self, curr_game: &mut GameState) {
+    pub fn tick(&mut self, id: EnemyId, curr_game: &mut GameState) {
         match self.state {
             State::Dormant => {
                 // Just wake up
@@ -54,14 +52,14 @@ impl Freak {
             State::Moving => {
                 // Begin performing actions
 
-                let action = self.behavior.tick(&curr_game);
+                let action = self.behavior.tick(curr_game);
 
                 match action {
                     Action::Move(move_to) => {
-                        curr_game.move_enemy(self.id, move_to)
+                        curr_game.move_enemy(id, move_to)
                     },
                     Action::Attack => {
-                        curr_game.attack(self.id)
+                        curr_game.attack(id)
                     },
                     Action::Special(side_effect) => {
                         side_effect.do_something(curr_game)
