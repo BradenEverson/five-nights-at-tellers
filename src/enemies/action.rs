@@ -4,7 +4,7 @@ use crate::{GameState, RoomId};
 
 /// The behavior of an enemy that happens each tick of the game
 pub trait EnemyBehavior {
-    /// Given the current game's context, 
+    /// Given the current game's context,
     fn tick(&mut self, curr_state: &GameState) -> Action;
 }
 
@@ -26,4 +26,3 @@ pub trait SideEffect {
     /// Do something to a mutable game state
     fn do_something(&self, game: &mut GameState);
 }
-

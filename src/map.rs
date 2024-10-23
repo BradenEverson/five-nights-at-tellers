@@ -20,8 +20,13 @@ impl Map {
         self.0[b].connect_to(a);
     }
 
+    /// Generates a new layout, returning the ID of the office room
+    pub fn generate(&mut self) -> RoomId {
+        todo!()
+    }
+
     /// Creates a path from one room to another room
-    pub fn generate_path() -> Option<Vec<RoomId>> {
+    pub fn generate_path(&self) -> Option<Vec<RoomId>> {
         todo!()
     }
 
