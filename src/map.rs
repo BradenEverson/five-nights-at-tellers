@@ -67,7 +67,7 @@ impl Map {
     }
 
     /// Creates a path from one room to another room
-    pub fn generate_path(&self) -> Option<Vec<RoomId>> {
+    pub fn generate_path(&self, from: RoomId, to: RoomId) -> Option<Vec<RoomId>> {
         todo!()
     }
 
