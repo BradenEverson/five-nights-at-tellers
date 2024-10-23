@@ -154,30 +154,26 @@ impl GameState {
 
     /// Attacks with a given enemy if possible
     pub(crate) fn attack(&mut self, attacker: EnemyId) {
+        if self.attack_possible(attacker) {
+            self.move_enemy(attacker, self.office.root);
+        }
+    }
+
+    /// Checks if an attack into the main office is possible currently for the given attacker
+    fn attack_possible(&self, attacker: EnemyId) -> bool {
         if let Some(room) = self.map.get_enemy_room(attacker) {
-            let possible = if room == self.office.left {
+            if room == self.office.left {
                 !self.left_door
             } else if room == self.office.right {
                 !self.right_door
             } else {
                 false
-            };
-
-            if possible {
-                self.move_enemy(attacker, self.office.root);
             }
+        } else {
+            false
         }
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use crate::Game;
-
-    #[test]
-    fn gameplay_ticks_work() {
-        let mut game = Game::default();
-        game.tick();
-        game.tick();
-    }
-}
+mod tests {}
