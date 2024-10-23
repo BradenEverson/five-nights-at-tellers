@@ -13,6 +13,16 @@ new_key_type! {
 #[derive(Default)]
 pub struct Map(SlotMap<RoomId, Room>);
 
+/// The root room with distinct left and right 'hallways'
+pub struct RootRoomInfo {
+    /// The root
+    pub root: RoomId,
+    /// The room connected to the 'left'
+    pub left: RoomId,
+    /// The room connected to the 'right'
+    pub right: RoomId,
+}
+
 impl Map {
     /// Connects two rooms by a shared pathway
     pub fn connect_rooms(&mut self, a: RoomId, b: RoomId) {
@@ -27,12 +37,33 @@ impl Map {
 
     /// Returns the room an enemy is in if they are in a room, `None` if otherwise
     pub fn get_enemy_room(&self, enemy: EnemyId) -> Option<RoomId> {
-        self.0.iter().find(|(_, room)| room.enemy_is_in(enemy)).map(|(id, _)| id)
+        self.0
+            .iter()
+            .find(|(_, room)| room.enemy_is_in(enemy))
+            .map(|(id, _)| id)
     }
 
     /// Generates a new layout, returning the ID of the office room
-    pub fn generate(&mut self) -> RoomId {
-        todo!()
+    pub fn generate(&mut self) -> RootRoomInfo {
+        let office = Room::default();
+        let left = Room::default();
+        let right = Room::default();
+
+        let office = self.0.insert(office);
+        let left = self.0.insert(left);
+        let right = self.0.insert(right);
+
+        self.connect_rooms(office, left);
+        self.connect_rooms(office, right);
+
+        // TODO: Continue creating graph by branching from left and right, don't just make a tree
+        // nodes can connect to previous nodes too
+
+        RootRoomInfo {
+            root: office,
+            left,
+            right,
+        }
     }
 
     /// Creates a path from one room to another room
@@ -65,6 +96,8 @@ impl Map {
 /// does it connect to
 #[derive(Default)]
 pub struct Room {
+    /// A Room's name
+    name: &'static str,
     /// Whether the room is disabled on the cameras or not
     disabled: bool,
     /// Who's in it
@@ -77,6 +110,16 @@ impl Room {
     /// Connets a room to another room
     pub fn connect_to(&mut self, room: RoomId) {
         self.conencts_to.push(room)
+    }
+
+    /// Sets a room's name
+    pub fn set_name(&mut self, name: &'static str) {
+        self.name = name
+    }
+
+    /// Returns the room's name
+    pub fn get_name(&self) -> &str {
+        self.name
     }
 
     /// Moves an enemy into the room

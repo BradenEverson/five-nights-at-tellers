@@ -8,7 +8,7 @@ use crate::enemies::action::{Action, EnemyBehavior};
 pub struct GenericBehavior;
 
 impl EnemyBehavior for GenericBehavior {
-    fn tick(&mut self, curr_state: &crate::GameState) -> Action {
+    fn tick(&mut self, _curr_state: &crate::GameState) -> Action {
         todo!("Flesh out behavior")
     }
 }

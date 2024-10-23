@@ -4,7 +4,7 @@
 use std::collections::HashMap;
 
 use enemies::{EnemyId, Freak};
-use map::{Map, RoomId};
+use map::{Map, RoomId, RootRoomInfo};
 use rand::{rngs::ThreadRng, thread_rng, Rng};
 use slotmap::SlotMap;
 
@@ -59,7 +59,7 @@ pub struct GameState {
     /// The map as graph-like structure
     pub map: Map,
     /// The office room
-    pub office: RoomId,
+    pub office: RootRoomInfo,
     /// If the left door is closed
     left_door: bool,
     /// If the right door is closed
@@ -69,7 +69,7 @@ pub struct GameState {
     /// The current power draw (per tick)
     draw: u32,
     /// Are we dead?
-    dead: bool
+    dead: bool,
 }
 
 impl Default for GameState {
@@ -118,7 +118,7 @@ impl GameState {
             }
         }
 
-        if self.map.room_has_enemies(self.office) {
+        if self.map.room_has_enemies(self.office.root) {
             self.dead = true
         }
     }
@@ -154,7 +154,19 @@ impl GameState {
 
     /// Attacks with a given enemy if possible
     pub(crate) fn attack(&mut self, attacker: EnemyId) {
-        todo!("Check if enemy is coming in from left or right, if door is closed in that direction then attack fails, else move into office")
+        if let Some(room) = self.map.get_enemy_room(attacker) {
+            let possible = if room == self.office.left {
+                !self.left_door
+            } else if room == self.office.right {
+                !self.right_door
+            } else {
+                false
+            };
+
+            if possible {
+                self.move_enemy(attacker, self.office.root);
+            }
+        }
     }
 }
 
