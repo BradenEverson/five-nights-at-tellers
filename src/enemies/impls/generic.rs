@@ -10,7 +10,7 @@ use crate::{
 
 /// The most generic enemy behavior possible, attempt to advance towards the player and if they're
 /// only 1 room away attempt to attack
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct StraightPathBehavior {
     /// The ideal
     ideal_path: Option<Vec<RoomId>>,

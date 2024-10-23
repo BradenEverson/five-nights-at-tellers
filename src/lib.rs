@@ -1,5 +1,4 @@
 //! The Game State Machine Definition, Creates a Game Session with a number of enemies, a target
-//! "time" to survive to, how many ticks create this time, and current door metadata
 
 use std::collections::HashMap;
 

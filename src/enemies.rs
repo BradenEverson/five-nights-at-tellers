@@ -31,12 +31,29 @@ pub struct Freak {
 
 impl Freak {
     /// Creates a new enemy
-    pub fn new(name: &'static str, cooldown: Range<u64>, behavior: Box<dyn EnemyBehavior>) -> Self {
+    pub fn new<BEHAVIOR: EnemyBehavior + 'static>(
+        name: &'static str,
+        cooldown: Range<u64>,
+        behavior: BEHAVIOR,
+    ) -> Self {
         Self {
             name,
             state: State::Dormant,
             cooldown,
-            behavior,
+            behavior: Box::new(behavior),
+        }
+    }
+
+    #[cfg(test)]
+    /// Creates a testable default enemy type with the generic pathfinding behavior
+    pub fn default_test_enemy() -> Self {
+        use impls::generic::StraightPathBehavior;
+
+        Self {
+            name: "Test Entity",
+            state: State::Dormant,
+            cooldown: 10..20,
+            behavior: Box::new(StraightPathBehavior::default()),
         }
     }
 
