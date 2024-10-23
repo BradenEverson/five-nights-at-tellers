@@ -7,6 +7,7 @@ use enemies::{EnemyId, Freak};
 use map::{Map, RoomId, RootRoomInfo};
 use rand::{rngs::ThreadRng, thread_rng, Rng};
 use slotmap::SlotMap;
+use wasm_bindgen::prelude::wasm_bindgen;
 
 pub mod enemies;
 pub mod map;
@@ -19,16 +20,17 @@ pub const DEFAULT_POWER_DRAW: u32 = 10;
 pub const INITIAL_POWER: u32 = 500_000;
 
 /// The full driver for a game responsible for holding both the enemies and the game state
-pub struct Game<RNG: Rng> {
+#[wasm_bindgen]
+pub struct Game {
     /// All enemies that exist in the game
     enemies: SlotMap<EnemyId, Freak>,
     /// The actual game's state
     state: GameState,
     /// The random number generation
-    rng: RNG,
+    rng: ThreadRng,
 }
 
-impl Default for Game<ThreadRng> {
+impl Default for Game {
     fn default() -> Self {
         let rng = thread_rng();
         let state = GameState::default();
@@ -42,7 +44,7 @@ impl Default for Game<ThreadRng> {
     }
 }
 
-impl<RNG: Rng> Game<RNG> {
+impl Game {
     /// Ticks the game forward
     pub fn tick(&mut self) {
         self.state.tick(&mut self.enemies, &mut self.rng)

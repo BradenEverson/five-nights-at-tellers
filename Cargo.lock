@@ -27,6 +27,7 @@ dependencies = [
  "getrandom",
  "rand",
  "slotmap",
+ "wasm-bindgen",
 ]
 
 [[package]]
