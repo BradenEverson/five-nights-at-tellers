@@ -68,6 +68,8 @@ pub struct GameState {
     power: u32,
     /// The current power draw (per tick)
     draw: u32,
+    /// Are we dead?
+    dead: bool
 }
 
 impl Default for GameState {
@@ -84,6 +86,7 @@ impl Default for GameState {
             left_door: false,
             right_door: false,
             draw: DEFAULT_POWER_DRAW,
+            dead: false,
         }
     }
 }
@@ -113,6 +116,10 @@ impl GameState {
                 let new_cooldown = enemy.gen_cooldown(rng);
                 self.cooldowns.insert(id, new_cooldown);
             }
+        }
+
+        if self.map.room_has_enemies(self.office) {
+            self.dead = true
         }
     }
 
@@ -147,7 +154,7 @@ impl GameState {
 
     /// Attacks with a given enemy if possible
     pub(crate) fn attack(&mut self, attacker: EnemyId) {
-        todo!()
+        todo!("Check if enemy is coming in from left or right, if door is closed in that direction then attack fails, else move into office")
     }
 }
 

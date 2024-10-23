@@ -20,6 +20,11 @@ impl Map {
         self.0[b].connect_to(a);
     }
 
+    /// Returns true if a room has any enemies
+    pub fn room_has_enemies(&self, room: RoomId) -> bool {
+        !self.0[room].occupied_by.is_empty()
+    }
+
     /// Returns the room an enemy is in if they are in a room, `None` if otherwise
     pub fn get_enemy_room(&self, enemy: EnemyId) -> Option<RoomId> {
         self.0.iter().find(|(_, room)| room.enemy_is_in(enemy)).map(|(id, _)| id)
