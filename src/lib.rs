@@ -138,7 +138,11 @@ impl GameState {
 
     /// Moves an enemy from their current room to the desired room if possible
     pub(crate) fn move_enemy(&mut self, freak: EnemyId, to: RoomId) {
-        todo!()
+        let room = self.map.get_enemy_room(freak);
+        if let Some(room) = room {
+            self.map.move_enemy_out_of(room, freak)
+        }
+        self.map.move_enemy_to(to, freak);
     }
 
     /// Attacks with a given enemy if possible

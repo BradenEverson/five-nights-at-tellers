@@ -20,6 +20,11 @@ impl Map {
         self.0[b].connect_to(a);
     }
 
+    /// Returns the room an enemy is in if they are in a room, `None` if otherwise
+    pub fn get_enemy_room(&self, enemy: EnemyId) -> Option<RoomId> {
+        self.0.iter().find(|(_, room)| room.enemy_is_in(enemy)).map(|(id, _)| id)
+    }
+
     /// Generates a new layout, returning the ID of the office room
     pub fn generate(&mut self) -> RoomId {
         todo!()
@@ -80,6 +85,11 @@ impl Room {
         if let Some(idx) = idx {
             self.occupied_by.remove(idx);
         }
+    }
+
+    /// Checks if the specified enemy is in this room
+    pub fn enemy_is_in(&self, enemy: EnemyId) -> bool {
+        self.occupied_by.contains(&enemy)
     }
 
     /// Disables camera viewing for this room
