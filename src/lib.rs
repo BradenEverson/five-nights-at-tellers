@@ -3,7 +3,7 @@
 
 use std::collections::HashMap;
 
-use enemies::{EnemyId, Freak};
+use enemies::{impls::generic::StraightPathBehavior, EnemyId, Freak};
 use map::{Map, RoomId, RootRoomInfo};
 use rand::{rngs::ThreadRng, seq::SliceRandom, thread_rng, Rng};
 use slotmap::SlotMap;
@@ -13,11 +13,11 @@ pub mod enemies;
 pub mod map;
 
 /// How much power a door being closed draws
-pub const POWER_DRAW_DOOR: u32 = 500;
+pub const POWER_DRAW_DOOR: i32 = 100;
 /// How much power is idly drawn
-pub const DEFAULT_POWER_DRAW: u32 = 10;
+pub const DEFAULT_POWER_DRAW: i32 = 10;
 /// How much power you start with
-pub const INITIAL_POWER: u32 = 500_000;
+pub const INITIAL_POWER: i32 = 500_000;
 /// How many game ticks we need to win
 pub const TICKS_PER_HOUR: u64 = 100_000;
 /// How many hours do we need to survive
@@ -36,16 +36,19 @@ pub struct Game {
 
 impl Default for Game {
     fn default() -> Self {
-        let rng = thread_rng();
-        let state = GameState::default();
+        let mut rng = thread_rng();
         let mut enemies: SlotMap<EnemyId, Freak> = SlotMap::default();
 
         // Register all enemies we want in the game
-        const ENEMIES: Vec<Freak> = vec![];
+        let enemy_registry: Vec<Freak> = vec![
+            Freak::new("Teller", 200..350, StraightPathBehavior::default())
+        ];
 
-        for enemy in ENEMIES {
+        for enemy in enemy_registry {
             enemies.insert(enemy);
         }
+
+        let state = GameState::default().with_enemies(&enemies.keys().collect::<Vec<_>>(), &mut rng);
 
         Self {
             enemies,
@@ -78,12 +81,22 @@ impl Game {
     }
 
     /// Check the current power draw
-    pub fn power(&self) -> u32 {
-        self.state.power
+    pub fn power_percent(&self) -> f64 {
+        ((self.state.power as f64 / INITIAL_POWER as f64) * 100.0).max(0.0)
     }
 
     /// Render the current map
-    pub fn render(&self) -> String {
+    pub fn render(&mut self) -> String {
+        let truth_table = (self.state.left_door, self.state.right_door);
+        let message = match truth_table {
+            (true, true) => "Both Doors Closed",
+            (true, _) => "Left Door Closed",
+            (_, true) => "Right Door Closed",
+            _ => "Both Doors Open"
+        };
+
+        self.state.map.0[self.state.office.root].set_name(format!("Office | {}", message));
+
         self.state.map.display()
     }
 }
@@ -106,9 +119,9 @@ pub struct GameState {
     /// If the right door is closed
     right_door: bool,
     /// How much power is left
-    power: u32,
+    power: i32,
     /// The current power draw (per tick)
-    draw: u32,
+    draw: i32,
     /// Are we dead?
     dead: bool,
     /// What is our target ticks
@@ -164,6 +177,7 @@ impl GameState {
         }
 
         self.power -= self.draw;
+        self.out_of_power();
 
         for (id, enemy) in enemies {
             if let Some(time) = self.cooldowns.get(&id) {
@@ -184,23 +198,37 @@ impl GameState {
         false
     }
 
+    /// If power is below 0, opens the doors
+    pub fn out_of_power(&mut self) -> bool {
+        if self.power <= 0 {
+            self.left_door = false;
+            self.right_door = false;
+
+            true
+        } else {
+            false
+        }
+    }
+
     /// Toggles if a door is open or closed, affecting power draw respectively
     pub fn toggle_door(&mut self, direction: Door) {
-        let now_closed = match direction {
-            Door::Left => {
-                self.left_door = !self.left_door;
-                !self.left_door
-            }
-            Door::Right => {
-                self.right_door = !self.right_door;
-                !self.right_door
-            }
-        };
+        if !self.out_of_power() {
+            let now_closed = match direction {
+                Door::Left => {
+                    self.left_door = !self.left_door;
+                    !self.left_door
+                }
+                Door::Right => {
+                    self.right_door = !self.right_door;
+                    !self.right_door
+                }
+            };
 
-        if now_closed {
-            self.draw += POWER_DRAW_DOOR;
-        } else {
-            self.draw -= POWER_DRAW_DOOR;
+            if now_closed {
+                self.draw -= POWER_DRAW_DOOR;
+            } else {
+                self.draw += POWER_DRAW_DOOR;
+            }
         }
     }
 

@@ -27,7 +27,7 @@ export class Game {
    * Check the current power draw
    * @returns {number}
    */
-  power(): number;
+  power_percent(): number;
   /**
    * Render the current map
    * @returns {string}
@@ -44,7 +44,7 @@ export interface InitOutput {
   readonly game_new: () => number;
   readonly game_toggle_left: (a: number) => void;
   readonly game_toggle_right: (a: number) => void;
-  readonly game_power: (a: number) => number;
+  readonly game_power_percent: (a: number) => number;
   readonly game_render: (a: number, b: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;

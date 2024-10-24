@@ -123,9 +123,9 @@ export class Game {
      * Check the current power draw
      * @returns {number}
      */
-    power() {
-        const ret = wasm.game_power(this.__wbg_ptr);
-        return ret >>> 0;
+    power_percent() {
+        const ret = wasm.game_power_percent(this.__wbg_ptr);
+        return ret;
     }
     /**
      * Render the current map

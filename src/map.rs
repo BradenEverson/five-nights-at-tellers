@@ -14,7 +14,7 @@ new_key_type! {
 
 /// A contextual graph of all rooms
 #[derive(Default)]
-pub struct Map(SlotMap<RoomId, Room>);
+pub struct Map(pub(crate) SlotMap<RoomId, Room>);
 
 /// The root room with distinct left and right 'hallways'
 pub struct RootRoomInfo {
@@ -210,7 +210,7 @@ impl Display for Map {
 #[derive(Default)]
 pub struct Room {
     /// A Room's name
-    name: &'static str,
+    name: String,
     /// Whether the room is disabled on the cameras or not
     disabled: bool,
     /// Who's in it
@@ -237,13 +237,13 @@ impl Room {
     }
 
     /// Sets a room's name
-    pub fn set_name(&mut self, name: &'static str) {
-        self.name = name
+    pub fn set_name<NAME: Into<String>>(&mut self, name: NAME) {
+        self.name = name.into()
     }
 
     /// Returns the room's name
     pub fn get_name(&self) -> &str {
-        self.name
+        &self.name
     }
 
     /// Moves an enemy into the room
