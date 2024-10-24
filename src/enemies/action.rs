@@ -6,8 +6,8 @@ use super::EnemyId;
 
 /// The behavior of an enemy that happens each tick of the game
 pub trait EnemyBehavior {
-    /// Given the current game's context,
-    fn tick(&mut self, curr_state: &GameState, id: EnemyId) -> Action;
+    /// Given the current game's context, performs an arbitrary amount of actions
+    fn tick(&mut self, curr_state: &GameState, id: EnemyId) -> Vec<Action>;
 }
 
 /// All different actions an enemy can do in a turn

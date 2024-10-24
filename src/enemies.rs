@@ -74,13 +74,15 @@ impl Freak {
             State::Moving => {
                 // Begin performing actions
 
-                let action = self.behavior.tick(curr_game, id);
+                let actions = self.behavior.tick(curr_game, id);
 
-                match action {
-                    Action::Move(move_to) => curr_game.move_enemy(id, move_to),
-                    Action::Attack => curr_game.attack(id),
-                    Action::Special(side_effect) => side_effect.do_something(curr_game),
-                    Action::Nothing => {}
+                for action in actions {
+                    match action {
+                        Action::Move(move_to) => curr_game.move_enemy(id, move_to),
+                        Action::Attack => curr_game.attack(id),
+                        Action::Special(side_effect) => side_effect.do_something(curr_game),
+                        Action::Nothing => {}
+                    }
                 }
             }
         }

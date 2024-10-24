@@ -17,11 +17,11 @@ pub struct StraightPathBehavior {
 }
 
 impl EnemyBehavior for StraightPathBehavior {
-    fn tick(&mut self, curr_state: &crate::GameState, id: EnemyId) -> Action {
+    fn tick(&mut self, curr_state: &crate::GameState, id: EnemyId) -> Vec<Action> {
         if self.ideal_path.is_none() {
             let enemy_room = curr_state.map.get_enemy_room(id);
             if enemy_room.is_none() {
-                return Action::Nothing;
+                return vec![Action::Nothing];
             }
             let ideal_path = curr_state
                 .map
@@ -29,7 +29,7 @@ impl EnemyBehavior for StraightPathBehavior {
             if let Some(path) = ideal_path {
                 self.ideal_path = Some(path);
             } else {
-                return Action::Nothing;
+                return vec![Action::Nothing];
             }
         };
 
@@ -41,12 +41,12 @@ impl EnemyBehavior for StraightPathBehavior {
         let idx = path.iter().position(|room| *room == current_location);
         if let Some(idx) = idx {
             if idx >= path.len() - 2 {
-                return Action::Attack
+                return vec![Action::Attack]
             } else {
-                return Action::Move(path[idx + 1])
+                return vec![Action::Move(path[idx + 1])]
             }
         }
 
-        return Action::Nothing
+        return vec![Action::Nothing]
     }
 }
