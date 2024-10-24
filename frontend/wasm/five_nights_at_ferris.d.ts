@@ -22,6 +22,11 @@ export class Game {
    */
   static new(): Game;
   /**
+   * Gets the current time as an hour
+   * @returns {number}
+   */
+  get_time(): number;
+  /**
    * Close the left door
    */
   toggle_left(): void;
@@ -61,6 +66,7 @@ export interface InitOutput {
   readonly __wbg_game_free: (a: number, b: number) => void;
   readonly game_tick: (a: number) => number;
   readonly game_new: () => number;
+  readonly game_get_time: (a: number) => number;
   readonly game_toggle_left: (a: number) => void;
   readonly game_toggle_right: (a: number) => void;
   readonly game_power_percent: (a: number) => number;

@@ -129,6 +129,14 @@ export class Game {
         return Game.__wrap(ret);
     }
     /**
+     * Gets the current time as an hour
+     * @returns {number}
+     */
+    get_time() {
+        const ret = wasm.game_get_time(this.__wbg_ptr);
+        return ret;
+    }
+    /**
      * Close the left door
      */
     toggle_left() {

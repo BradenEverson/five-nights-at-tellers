@@ -47,6 +47,20 @@
                 z-index: 100;
             }
 
+            #time-display {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                font-size: 24px;
+                font-weight: bold;
+                color: #ff6347;
+                background-color: rgba(0, 0, 0, 0.7);
+                padding: 10px 20px;
+                border-radius: 5px;
+                border: 2px solid #ff6347;
+                z-index: 100;
+            }
+
             .door-button {
                 background-color: rgba(255, 255, 255, 0.1);
                 color: #00ff00;
@@ -127,6 +141,7 @@
     </head>
     <body>
         <div id="power-display">Power: 100%</div>
+        <div id="time-display">12 AM</div>
 
         <div id="office-container">
             <div id="office"></div>
@@ -144,6 +159,7 @@
 
             let game = Game.new();
             const powerDisplay = document.getElementById("power-display");
+            const clockDisplay = document.getElementById("time-display");
             const mapDisplay = document.getElementById("map-display");
             const office = document.getElementById("office");
             const jumpscare = document.getElementById("jumpscare");
@@ -156,6 +172,7 @@
                 if (won) {
                     alert("You Won!");
                     clearInterval(gameInterval);
+                    location.reload();
                 }
                 let enemy = game.is_dead();
                 if (enemy) {
@@ -176,6 +193,7 @@
             function updateDisplay() {
                 console.log(game.render());
                 powerDisplay.textContent = `Power: ${game.power_percent().toFixed(1)}%`;
+                clockDisplay.textContent = `${game.get_time()} AM`;
             }
 
             function updateButtonVisibility(panX) {
@@ -220,7 +238,7 @@
                     game.toggle_right();
                 });
 
-            const tickInterval = setInterval(tickGame, 10);
+            const tickInterval = setInterval(tickGame, 20);
             const updateInterval = setInterval(updateDisplay, 1500);
             updateDisplay();
         </script>

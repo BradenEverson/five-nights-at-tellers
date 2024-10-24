@@ -19,9 +19,9 @@ pub const DEFAULT_POWER_DRAW: i32 = 10;
 /// How much power you start with
 pub const INITIAL_POWER: i32 = 500_000;
 /// How many game ticks we need to win
-pub const TICKS_PER_HOUR: u64 = 100_000;
+pub const TICKS_PER_HOUR: u64 = 1800;
 /// How many hours do we need to survive
-pub const HOURS_TO_WIN: u64 = 8;
+pub const HOURS_TO_WIN: u64 = 6;
 
 /// The full driver for a game responsible for holding both the enemies and the game state
 #[wasm_bindgen]
@@ -46,9 +46,9 @@ impl Default for Game {
             StraightPathBehavior::default(),
         )];
 
-        for enemy in enemy_registry {
+        /*for enemy in enemy_registry {
             enemies.insert(enemy);
-        }
+        }*/
 
         let state =
             GameState::default().with_enemies(&enemies.keys().collect::<Vec<_>>(), &mut rng);
@@ -71,6 +71,15 @@ impl Game {
     /// Create a new game (trait impls aren't accessible to wasm_bindgen
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Gets the current time as an hour
+    pub fn get_time(&self) -> u8 {
+        let hours = (self.state.ticks / TICKS_PER_HOUR) as u8;
+        match hours {
+            0 => 12,
+            _ => hours
+        }
     }
 
     /// Close the left door
