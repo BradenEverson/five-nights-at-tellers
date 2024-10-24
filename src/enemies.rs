@@ -17,7 +17,6 @@ new_key_type! {
 }
 
 /// An enemy and all of its related behavioral metadata
-#[derive(Clone)]
 pub struct Freak {
     /// The enemy's name
     name: &'static str,
