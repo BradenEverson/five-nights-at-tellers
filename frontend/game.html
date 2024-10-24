@@ -6,31 +6,115 @@
         <title>Five Nights at Ferris's</title>
         <style>
             body {
-                font-family: Arial, sans-serif;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
+                font-family: "Courier New", Courier, monospace;
+                margin: 0;
+                padding: 0;
                 height: 100vh;
+                overflow: hidden;
+                display: flex;
+                justify-content: flex-start;
+                align-items: flex-end;
             }
+
+            #office-container {
+                position: relative;
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            #office {
+                position: absolute;
+                width: 200%;
+                height: 125%;
+                background: url("./image/office.png") no-repeat;
+                background-size: cover;
+                background-position: center;
+                transition: transform 0.3s ease;
+            }
+
             #power-display {
-                margin-bottom: 20px;
+                position: absolute;
+                top: 20px;
+                right: 20px;
                 font-size: 24px;
                 font-weight: bold;
-            }
-            .door-button {
-                margin: 10px;
+                color: #ff6347;
+                background-color: rgba(0, 0, 0, 0.7);
                 padding: 10px 20px;
+                border-radius: 5px;
+                border: 2px solid #ff6347;
+                z-index: 100;
+            }
+
+            .door-button {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #00ff00;
+                font-size: 20px;
+                font-weight: bold;
+                padding: 15px 30px;
+                border: 2px solid #00ff00;
+                border-radius: 5px;
+                margin: 15px;
+                cursor: pointer;
+                text-shadow: 2px 2px 4px #000;
+                transition: all 0.3s ease;
+            }
+
+            .door-button:hover {
+                background-color: rgba(255, 255, 255, 0.3);
+                border-color: #ff6347;
+                color: #ff6347;
+            }
+
+            #map-display {
+                display: none;
+                position: absolute;
+                background-color: rgba(0, 0, 0, 0.8);
+                color: #32cd32;
+                padding: 20px;
+                border-radius: 5px;
+                border: 2px solid #32cd32;
                 font-size: 18px;
+                width: 300px;
+                height: 200px;
+                text-shadow: 2px 2px 4px #000;
+                z-index: 100;
+            }
+
+            .camera-view {
+                position: absolute;
+                width: 100px;
+                height: 100px;
+                background-color: rgba(255, 255, 255, 0.1);
+                border: 2px solid #00ff00;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            .camera-view:hover {
+                background-color: rgba(255, 255, 255, 0.3);
+            }
+
+            #camera-1 {
+                top: 40%;
+                left: 10%;
+            }
+
+            #camera-2 {
+                top: 40%;
+                right: 10%;
             }
         </style>
     </head>
     <body>
-        <h1>The Game :O</h1>
         <div id="power-display">Power: 100%</div>
-        <button id="left-door" class="door-button">Toggle Left Door</button>
-        <button id="right-door" class="door-button">Toggle Right Door</button>
-        <pre id="map-display"></pre>
+
+        <div id="office-container">
+            <div id="office"></div>
+
+            <pre id="map-display"></pre>
+        </div>
 
         <script type="module">
             import init, { Game } from "./wasm/five_nights_at_ferris.js";
@@ -39,6 +123,7 @@
             let game = Game.new();
             const powerDisplay = document.getElementById("power-display");
             const mapDisplay = document.getElementById("map-display");
+            const office = document.getElementById("office");
 
             function tickGame() {
                 const gameOver = game.tick();
@@ -49,27 +134,25 @@
             }
 
             function updateDisplay() {
-                mapDisplay.textContent = game.render();
                 powerDisplay.textContent = `Power: ${game.power_percent().toFixed(1)}%`;
             }
 
-            document
-                .getElementById("left-door")
-                .addEventListener("click", () => {
-                    game.toggle_left();
-                    updateDisplay();
-                });
+            document.addEventListener("mousemove", (e) => {
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
 
-            document
-                .getElementById("right-door")
-                .addEventListener("click", () => {
-                    game.toggle_right();
-                    updateDisplay();
-                });
+                const panX = Math.max(-28, Math.min((0.5 - x) * 100, 22)) - 22;
+                const panY = Math.max(-5, Math.min((0.5 - y) * 5, 0));
 
-            const gameInterval = setInterval(tickGame, 50);
+                office.style.transform = `translate(${panX}%, ${panY}%)`;
+            });
+
+            window.addEventListener("resize", () => {
+                office.style.transform = "translate(-22%, 0%)";
+            });
+
+            const tickInterval = setInterval(tickGame, 50);
             const updateInterval = setInterval(updateDisplay, 1500);
-
             updateDisplay();
         </script>
     </body>

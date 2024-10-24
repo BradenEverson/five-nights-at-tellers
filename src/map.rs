@@ -4,11 +4,13 @@ use std::{collections::{HashMap, HashSet, VecDeque}, fmt::Display};
 
 use rand::{seq::SliceRandom, thread_rng, Rng};
 use slotmap::{new_key_type, SlotMap};
+use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::enemies::EnemyId;
 
 new_key_type! {
     /// A room's ID
+    #[wasm_bindgen]
     pub struct RoomId;
 }
 

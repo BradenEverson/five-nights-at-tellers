@@ -5,6 +5,7 @@ use std::ops::Range;
 use action::{Action, EnemyBehavior};
 use rand::Rng;
 use slotmap::new_key_type;
+use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::GameState;
 
@@ -13,6 +14,7 @@ pub mod impls;
 
 new_key_type! {
     /// An enemy's ID for usage in the room HashMap
+    #[wasm_bindgen]
     pub struct EnemyId;
 }
 

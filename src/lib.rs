@@ -85,6 +85,11 @@ impl Game {
         ((self.state.power as f64 / INITIAL_POWER as f64) * 100.0).max(0.0)
     }
 
+    /// Check that cams of a room, unless that room's camera is currently disabled
+    pub fn check_cams(&self, room: RoomId) -> Option<Vec<String>> {
+        todo!()
+    }
+
     /// Render the current map
     pub fn render(&mut self) -> String {
         let truth_table = (self.state.left_door, self.state.right_door);
@@ -245,6 +250,8 @@ impl GameState {
     pub(crate) fn attack(&mut self, attacker: EnemyId) {
         if self.attack_possible(attacker) {
             self.move_enemy(attacker, self.office.root);
+        } else {
+            self.move_enemy(attacker, self.spawn_points[0])
         }
     }
 

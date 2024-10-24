@@ -1,6 +1,12 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
+ *r" An enemy's ID for usage in the room HashMap
+ */
+export class EnemyId {
+  free(): void;
+}
+/**
  * The full driver for a game responsible for holding both the enemies and the game state
  */
 export class Game {
@@ -29,22 +35,37 @@ export class Game {
    */
   power_percent(): number;
   /**
+   * Check that cams of a room, unless that room's camera is currently disabled
+   * @param {RoomId} room
+   * @returns {(string)[] | undefined}
+   */
+  check_cams(room: RoomId): (string)[] | undefined;
+  /**
    * Render the current map
    * @returns {string}
    */
   render(): string;
+}
+/**
+ *r" A room's ID
+ */
+export class RoomId {
+  free(): void;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_roomid_free: (a: number, b: number) => void;
+  readonly __wbg_enemyid_free: (a: number, b: number) => void;
   readonly __wbg_game_free: (a: number, b: number) => void;
   readonly game_tick: (a: number) => number;
   readonly game_new: () => number;
   readonly game_toggle_left: (a: number) => void;
   readonly game_toggle_right: (a: number) => void;
   readonly game_power_percent: (a: number) => number;
+  readonly game_check_cams: (a: number, b: number, c: number) => void;
   readonly game_render: (a: number, b: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
