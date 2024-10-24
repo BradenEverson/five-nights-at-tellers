@@ -107,6 +107,23 @@
                 z-index: 100;
             }
 
+            #camera-button {
+                display: none;
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(255, 255, 255, 0.2);
+                color: #ff6347;
+                font-size: 24px;
+                font-weight: bold;
+                padding: 10px 20px;
+                border: 2px solid #ff6347;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 400;
+            }
+
             #jumpscare {
                 display: none;
                 position: absolute;
@@ -116,8 +133,32 @@
                 height: 120vh;
                 background-size: cover;
                 background-position: center;
-                z-index: 200;
+                z-index: 1000;
                 animation: shake 0.5s infinite;
+            }
+
+            #camera-hud {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.9);
+                color: #00ff00;
+                font-size: 36px;
+                font-weight: bold;
+                text-align: center;
+                z-index: 300;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #camera-label {
+                padding: 20px;
+                background-color: rgba(0, 255, 0, 0.3);
+                border: 2px solid #00ff00;
+                border-radius: 10px;
             }
 
             @keyframes shake {
@@ -153,6 +194,12 @@
             <div id="jumpscare"></div>
         </div>
 
+        <button id="camera-button">Camera</button>
+
+        <div id="camera-hud">
+            <div id="camera-label">CAMERA DISPLAY</div>
+        </div>
+
         <script type="module">
             import init, { Game } from "./wasm/five_nights_at_ferris.js";
             await init();
@@ -166,6 +213,8 @@
             const leftDoorButton = document.getElementById("left-door-button");
             const rightDoorButton =
                 document.getElementById("right-door-button");
+            const cameraButton = document.getElementById("camera-button");
+            const cameraHud = document.getElementById("camera-hud");
 
             function tickGame() {
                 let won = game.tick();
@@ -220,6 +269,12 @@
                 office.style.transform = `translate(${panX}%, ${panY}%)`;
 
                 updateButtonVisibility(panX);
+
+                if (panY < -2) {
+                    cameraButton.style.display = "block";
+                } else {
+                    cameraButton.style.display = "none";
+                }
             });
 
             window.addEventListener("resize", () => {
@@ -237,6 +292,14 @@
                 .addEventListener("click", () => {
                     game.toggle_right();
                 });
+
+            cameraButton.addEventListener("click", () => {
+                if (cameraHud.style.display == "flex") {
+                    cameraHud.style.display = "none";
+                } else {
+                    cameraHud.style.display = "flex";
+                }
+            });
 
             const tickInterval = setInterval(tickGame, 20);
             const updateInterval = setInterval(updateDisplay, 1500);
