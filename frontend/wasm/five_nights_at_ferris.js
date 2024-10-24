@@ -47,13 +47,6 @@ function addHeapObject(obj) {
     return idx;
 }
 
-function _assertClass(instance, klass) {
-    if (!(instance instanceof klass)) {
-        throw new Error(`expected instance of ${klass.name}`);
-    }
-    return instance.ptr;
-}
-
 let cachedDataViewMemory0 = null;
 
 function getDataViewMemory0() {
@@ -61,16 +54,6 @@ function getDataViewMemory0() {
         cachedDataViewMemory0 = new DataView(wasm.memory.buffer);
     }
     return cachedDataViewMemory0;
-}
-
-function getArrayJsValueFromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    const mem = getDataViewMemory0();
-    const result = [];
-    for (let i = ptr; i < ptr + 4 * len; i += 4) {
-        result.push(takeObject(mem.getUint32(i, true)));
-    }
-    return result;
 }
 
 function handleError(f, args) {
@@ -164,29 +147,6 @@ export class Game {
     power_percent() {
         const ret = wasm.game_power_percent(this.__wbg_ptr);
         return ret;
-    }
-    /**
-     * Check that cams of a room, unless that room's camera is currently disabled
-     * @param {RoomId} room
-     * @returns {(string)[] | undefined}
-     */
-    check_cams(room) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(room, RoomId);
-            var ptr0 = room.__destroy_into_raw();
-            wasm.game_check_cams(retptr, this.__wbg_ptr, ptr0);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            let v2;
-            if (r0 !== 0) {
-                v2 = getArrayJsValueFromWasm0(r0, r1).slice();
-                wasm.__wbindgen_free(r0, r1 * 4, 4);
-            }
-            return v2;
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-        }
     }
     /**
      * Check if we're dead
