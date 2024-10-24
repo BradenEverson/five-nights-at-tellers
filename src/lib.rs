@@ -81,6 +81,11 @@ impl Game {
     pub fn power(&self) -> u32 {
         self.state.power
     }
+
+    /// Render the current map
+    pub fn render(&self) -> String {
+        self.state.map.display()
+    }
 }
 
 /// The game's internal state, responsible for keeping track of what enemies we have, where they
@@ -253,7 +258,7 @@ mod tests {
             game.tick(&mut enemy_map, &mut rng);
         }
 
-        game.map.display();
+        println!("{}", game.map);
         assert!(game.dead);
     }
 }

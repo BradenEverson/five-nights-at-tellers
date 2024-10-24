@@ -1,6 +1,6 @@
 //! Map and Room Layout information
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::{collections::{HashMap, HashSet, VecDeque}, fmt::Display};
 
 use rand::{seq::SliceRandom, thread_rng, Rng};
 use slotmap::{new_key_type, SlotMap};
@@ -71,7 +71,7 @@ impl Map {
 
         let mut rng = thread_rng();
 
-        let additional_rooms: usize = rng.gen_range(6..=13);
+        let additional_rooms: usize = rng.gen_range(10..=15);
         let mut room_ids = vec![left, right];
 
         for _ in 0..additional_rooms {
@@ -163,39 +163,45 @@ impl Map {
     pub fn move_enemy_out_of(&mut self, room: RoomId, enemy: EnemyId) {
         self.0[room].move_out_of(enemy)
     }
-
-    /// Displays the map layout
-    pub fn display(&self) {
+    /// Returns the map layout as a String
+    pub fn display(&self) -> String {
         let mut visited = HashSet::new();
+        let mut output = String::new();
 
         for (room_id, _) in &self.0 {
             if visited.contains(&room_id) {
                 continue;
             }
-            self.display_room(room_id, 0, &mut visited);
+            self.display_room(room_id, 0, &mut visited, &mut output);
         }
+
+        output
     }
 
-    /// Recursively display a room and its connected rooms
-    fn display_room(&self, room_id: RoomId, depth: usize, visited: &mut HashSet<RoomId>) {
+    /// Recursively builds a string to represent a room and its connected rooms
+    fn display_room(&self, room_id: RoomId, depth: usize, visited: &mut HashSet<RoomId>, output: &mut String) {
         if !visited.insert(room_id) {
             return;
         }
 
         let room = &self.0[room_id];
-        let indent = "    ".repeat(depth); // Indentation for room depth
+        let indent = "    ".repeat(depth);
 
-        // Display the room name or ID
         let enemies_in: String = room.occupied_by.iter().map(|_| "😈").collect();
-        println!("{}Room {:?}: {}{}", indent, room_id, room.get_name(), enemies_in);
+        output.push_str(&format!("{}Room {:?}: {}{}\n", indent, room_id, room.get_name(), enemies_in));
 
-        // Display connected rooms
         for &connected_room in &room.conencts_to {
             if !visited.contains(&connected_room) {
-                println!("{}|---> Room {:?}", indent, connected_room);
-                self.display_room(connected_room, depth + 1, visited);
+                output.push_str(&format!("{}|---> Room {:?}\n", indent, connected_room));
+                self.display_room(connected_room, depth + 1, visited, output);
             }
         }
+    }
+}
+
+impl Display for Map {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.display())
     }
 }
 
@@ -317,7 +323,7 @@ mod tests {
         let mut map = Map::default();
         map.generate();
 
-        map.display();
+        println!("{map}")
     }
 
     #[test]
@@ -330,6 +336,6 @@ mod tests {
  
         map.register_enemy(enemy_id, enemy_spawn[0]);
 
-        map.display();
+        println!("{map}")
     }
 }

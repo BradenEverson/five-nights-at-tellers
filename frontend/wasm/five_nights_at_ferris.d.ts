@@ -28,6 +28,11 @@ export class Game {
    * @returns {number}
    */
   power(): number;
+  /**
+   * Render the current map
+   * @returns {string}
+   */
+  render(): string;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -40,6 +45,9 @@ export interface InitOutput {
   readonly game_toggle_left: (a: number) => void;
   readonly game_toggle_right: (a: number) => void;
   readonly game_power: (a: number) => number;
+  readonly game_render: (a: number, b: number) => void;
+  readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
 }
 
