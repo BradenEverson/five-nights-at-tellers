@@ -51,8 +51,9 @@ impl Map {
         self.0[room].move_into(enemy);
     }
 
-    /// Generates a new layout, returning the ID of the office room
-    pub fn generate(&mut self) -> RootRoomInfo {
+    /// Generates a new layout, returning the ID of the office room and a list of good spawnable
+    /// positions
+    pub fn generate(&mut self) -> (RootRoomInfo, Vec<RoomId>) {
         let mut office = Room::default();
         let mut left = Room::default();
         let mut right = Room::default();
@@ -70,7 +71,7 @@ impl Map {
 
         let mut rng = thread_rng();
 
-        let additional_rooms: usize = rng.gen_range(6..13);
+        let additional_rooms: usize = rng.gen_range(6..=13);
         let mut room_ids = vec![left, right];
 
         for _ in 0..additional_rooms {
@@ -91,11 +92,23 @@ impl Map {
             }
         }
 
-        RootRoomInfo {
+        // Generate viable rooms to spawn enemies in, cannot be directly connected to the main
+        // rooms
+        let mut viable_spawn_rooms: Vec<_> = room_ids.into_iter().filter(|id| !self.0[*id].connects_to_any(&[&left, &right])).collect();
+        let mut spawn_rooms = vec![];
+        let spawn_rooms_count: usize = rng.gen_range(1..=4);
+
+        for _ in 0..spawn_rooms_count {
+            if let Some(popped) = viable_spawn_rooms.pop() {
+                spawn_rooms.push(popped);
+            }
+        }
+
+        (RootRoomInfo {
             root: office,
             left,
             right,
-        }
+        }, spawn_rooms)
     }
 
     /// Creates a path from one room to another room
@@ -166,14 +179,15 @@ impl Map {
     /// Recursively display a room and its connected rooms
     fn display_room(&self, room_id: RoomId, depth: usize, visited: &mut HashSet<RoomId>) {
         if !visited.insert(room_id) {
-            return; // Skip rooms that have already been visited
+            return;
         }
 
         let room = &self.0[room_id];
         let indent = "    ".repeat(depth); // Indentation for room depth
 
         // Display the room name or ID
-        println!("{}Room {:?}: {}", indent, room_id, room.get_name());
+        let enemies_in: String = room.occupied_by.iter().map(|_| "😈").collect();
+        println!("{}Room {:?}: {}{}", indent, room_id, room.get_name(), enemies_in);
 
         // Display connected rooms
         for &connected_room in &room.conencts_to {
@@ -203,6 +217,17 @@ impl Room {
     /// Connets a room to another room
     pub fn connect_to(&mut self, room: RoomId) {
         self.conencts_to.push(room)
+    }
+
+    /// Checks if the room connects to any of the id's provided
+    pub fn connects_to_any(&self, connections: &[&RoomId]) -> bool {
+        for room in &self.conencts_to {
+            if connections.contains(&room) {
+                return true;
+            }
+        }
+
+        false
     }
 
     /// Sets a room's name
@@ -246,6 +271,10 @@ impl Room {
 
 #[cfg(test)]
 mod tests {
+    use slotmap::SlotMap;
+
+    use crate::enemies::Freak;
+
     use super::{Map, Room};
 
     #[test]
@@ -287,6 +316,19 @@ mod tests {
     fn map_generation_is_good() {
         let mut map = Map::default();
         map.generate();
+
+        map.display();
+    }
+
+    #[test]
+    fn map_generation_with_enemies_is_good() {
+        let mut map = Map::default();
+        let (_, enemy_spawn) = map.generate();
+        let default_enemy = Freak::default_test_enemy();
+        let mut enemy_slot = SlotMap::default();
+        let enemy_id = enemy_slot.insert(default_enemy);
+ 
+        map.register_enemy(enemy_id, enemy_spawn[0]);
 
         map.display();
     }

@@ -61,6 +61,8 @@ pub struct GameState {
     pub map: Map,
     /// The office room
     pub office: RootRoomInfo,
+    /// Where enemies can be spawned
+    pub spawn_points: Vec<RoomId>,
     /// If the left door is closed
     left_door: bool,
     /// If the right door is closed
@@ -76,13 +78,14 @@ pub struct GameState {
 impl Default for GameState {
     fn default() -> Self {
         let mut map = Map::default();
-        let office = map.generate();
+        let (office, spawn_points) = map.generate();
 
         GameState {
             cooldowns: HashMap::default(),
             ticks: 0,
             map,
             office,
+            spawn_points,
             power: INITIAL_POWER,
             left_door: false,
             right_door: false,
