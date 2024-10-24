@@ -1,4 +1,5 @@
 //! The Game State Machine Definition, Creates a Game Session with a number of enemies, a target
+//! time to aim for, an amount of ticks to reach that time, power information, and door states
 
 use std::collections::HashMap;
 
@@ -17,6 +18,10 @@ pub const POWER_DRAW_DOOR: u32 = 500;
 pub const DEFAULT_POWER_DRAW: u32 = 10;
 /// How much power you start with
 pub const INITIAL_POWER: u32 = 500_000;
+/// How many game ticks we need to win
+pub const TICKS_PER_HOUR: u64 = 100_000;
+/// How many hours do we need to survive
+pub const HOURS_TO_WIN: u64 = 8;
 
 /// The full driver for a game responsible for holding both the enemies and the game state
 #[wasm_bindgen]
@@ -33,7 +38,14 @@ impl Default for Game {
     fn default() -> Self {
         let rng = thread_rng();
         let state = GameState::default();
-        let enemies: SlotMap<EnemyId, Freak> = SlotMap::default();
+        let mut enemies: SlotMap<EnemyId, Freak> = SlotMap::default();
+
+        // Register all enemies we want in the game
+        const ENEMIES: Vec<Freak> = vec![];
+
+        for enemy in ENEMIES {
+            enemies.insert(enemy);
+        }
 
         Self {
             enemies,
@@ -45,7 +57,7 @@ impl Default for Game {
 
 impl Game {
     /// Ticks the game forward
-    pub fn tick(&mut self) {
+    pub fn tick(&mut self) -> bool {
         self.state.tick(&mut self.enemies, &mut self.rng)
     }
 }
@@ -73,6 +85,8 @@ pub struct GameState {
     draw: u32,
     /// Are we dead?
     dead: bool,
+    /// What is our target ticks
+    ticks_needed_to_win: u64,
 }
 
 impl Default for GameState {
@@ -91,6 +105,7 @@ impl Default for GameState {
             right_door: false,
             draw: DEFAULT_POWER_DRAW,
             dead: false,
+            ticks_needed_to_win: HOURS_TO_WIN * TICKS_PER_HOUR
         }
     }
 }
@@ -115,8 +130,12 @@ impl GameState {
         self
     }
     /// Ticks through all enemy behaviors if it's time
-    pub fn tick<RNG: Rng>(&mut self, enemies: &mut SlotMap<EnemyId, Freak>, rng: &mut RNG) {
+    pub fn tick<RNG: Rng>(&mut self, enemies: &mut SlotMap<EnemyId, Freak>, rng: &mut RNG) -> bool {
         self.ticks += 1;
+
+        if self.ticks == self.ticks_needed_to_win {
+            return true
+        }
 
         self.power -= self.draw;
 
@@ -135,6 +154,8 @@ impl GameState {
         if self.map.room_has_enemies(self.office.root) {
             self.dead = true
         }
+
+        false
     }
 
     /// Toggles if a door is open or closed, affecting power draw respectively
