@@ -207,11 +207,11 @@ mod tests {
 
         let mut game = GameState::default().with_enemies(&[enemy_1, enemy_2, enemy_3], &mut rng);
 
-        for _ in 0..4 {
-            game.map.display();
+        for _ in 0..100 {
             game.tick(&mut enemy_map, &mut rng);
         }
 
         game.map.display();
+        assert!(game.dead);
     }
 }
