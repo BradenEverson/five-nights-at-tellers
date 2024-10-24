@@ -2,6 +2,7 @@
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
+use rand::{seq::SliceRandom, thread_rng, Rng};
 use slotmap::{new_key_type, SlotMap};
 
 use crate::enemies::EnemyId;
@@ -52,9 +53,13 @@ impl Map {
 
     /// Generates a new layout, returning the ID of the office room
     pub fn generate(&mut self) -> RootRoomInfo {
-        let office = Room::default();
-        let left = Room::default();
-        let right = Room::default();
+        let mut office = Room::default();
+        let mut left = Room::default();
+        let mut right = Room::default();
+
+        office.set_name("Office");
+        left.set_name("Left Office Entrance");
+        right.set_name("Right Office Entrance");
 
         let office = self.0.insert(office);
         let left = self.0.insert(left);
@@ -63,8 +68,28 @@ impl Map {
         self.connect_rooms(office, left);
         self.connect_rooms(office, right);
 
-        // TODO: Continue creating graph by branching from left and right, don't just make a tree
-        // nodes can connect to previous nodes too
+        let mut rng = thread_rng();
+
+        let additional_rooms: usize = rng.gen_range(6..13);
+        let mut room_ids = vec![left, right];
+
+        for _ in 0..additional_rooms {
+            let new_room = self.0.insert(Room::default());
+            let existing_room = *room_ids.choose(&mut rng).unwrap();
+
+            self.connect_rooms(new_room, existing_room);
+            room_ids.push(new_room)
+        }
+
+        let extra_connections: usize = rng.gen_range(1..=3);
+        for _ in 0..extra_connections {
+            let room_a = *room_ids.choose(&mut rng).unwrap();
+            let room_b = *room_ids.choose(&mut rng).unwrap();
+
+            if room_a != room_b && !self.0[room_a].conencts_to.contains(&room_b) {
+                self.connect_rooms(room_a, room_b);
+            }
+        }
 
         RootRoomInfo {
             root: office,
@@ -124,6 +149,39 @@ impl Map {
     /// Moves an enemy out of a room
     pub fn move_enemy_out_of(&mut self, room: RoomId, enemy: EnemyId) {
         self.0[room].move_out_of(enemy)
+    }
+
+    /// Displays the map layout
+    pub fn display(&self) {
+        let mut visited = HashSet::new();
+
+        for (room_id, _) in &self.0 {
+            if visited.contains(&room_id) {
+                continue;
+            }
+            self.display_room(room_id, 0, &mut visited);
+        }
+    }
+
+    /// Recursively display a room and its connected rooms
+    fn display_room(&self, room_id: RoomId, depth: usize, visited: &mut HashSet<RoomId>) {
+        if !visited.insert(room_id) {
+            return; // Skip rooms that have already been visited
+        }
+
+        let room = &self.0[room_id];
+        let indent = "    ".repeat(depth); // Indentation for room depth
+
+        // Display the room name or ID
+        println!("{}Room {:?}: {}", indent, room_id, room.get_name());
+
+        // Display connected rooms
+        for &connected_room in &room.conencts_to {
+            if !visited.contains(&connected_room) {
+                println!("{}|---> Room {:?}", indent, connected_room);
+                self.display_room(connected_room, depth + 1, visited);
+            }
+        }
     }
 }
 
@@ -223,5 +281,13 @@ mod tests {
 
         let path = map.generate_path(room_a, room_g).expect("Generate path");
         assert_eq!(path, [room_a, room_c, room_d, room_b, room_g]);
+    }
+
+    #[test]
+    fn map_generation_is_good() {
+        let mut map = Map::default();
+        map.generate();
+
+        map.display();
     }
 }
