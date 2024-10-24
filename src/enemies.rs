@@ -52,7 +52,7 @@ impl Freak {
         Self {
             name: "Test Entity",
             state: State::Dormant,
-            cooldown: 10..20,
+            cooldown: 1..2,
             behavior: Box::new(StraightPathBehavior::default()),
         }
     }

@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 use enemies::{EnemyId, Freak};
 use map::{Map, RoomId, RootRoomInfo};
-use rand::{rngs::ThreadRng, thread_rng, Rng};
+use rand::{rngs::ThreadRng, seq::SliceRandom, thread_rng, Rng};
 use slotmap::SlotMap;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -104,6 +104,16 @@ pub enum Door {
 }
 
 impl GameState {
+    /// Registers a collection of enemies into the map
+    pub fn with_enemies<RNG: Rng>(mut self, enemies: &[EnemyId], rng: &mut RNG) -> Self {
+        for enemy in enemies {
+            let room = self.spawn_points.choose(rng);
+            if let Some(room) = room {
+                self.map.register_enemy(*enemy, *room);
+            }
+        }
+        self
+    }
     /// Ticks through all enemy behaviors if it's time
     pub fn tick<RNG: Rng>(&mut self, enemies: &mut SlotMap<EnemyId, Freak>, rng: &mut RNG) {
         self.ticks += 1;
@@ -180,4 +190,28 @@ impl GameState {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use rand::thread_rng;
+    use slotmap::SlotMap;
+
+    use crate::{enemies::Freak, GameState};
+
+    #[test]
+    fn default_enemy_behavior_comes_closer_to_office() {
+        let mut rng = thread_rng();
+        let mut enemy_map = SlotMap::default();
+
+        let enemy_1 = enemy_map.insert(Freak::default_test_enemy());
+        let enemy_2 = enemy_map.insert(Freak::default_test_enemy());
+        let enemy_3 = enemy_map.insert(Freak::default_test_enemy());
+
+        let mut game = GameState::default().with_enemies(&[enemy_1, enemy_2, enemy_3], &mut rng);
+
+        for _ in 0..4 {
+            game.map.display();
+            game.tick(&mut enemy_map, &mut rng);
+        }
+
+        game.map.display();
+    }
+}

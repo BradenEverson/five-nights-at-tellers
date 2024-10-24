@@ -36,7 +36,17 @@ impl EnemyBehavior for StraightPathBehavior {
         // Safety: Here we are 100% sure ideal path is some, we generate a path for it if it
         // doesn't already exist right above here
         let path = self.ideal_path.clone().unwrap();
+        let current_location = curr_state.map.get_enemy_room(id).unwrap();
 
-        todo!()
+        let idx = path.iter().position(|room| *room == current_location);
+        if let Some(idx) = idx {
+            if idx >= path.len() - 2 {
+                return Action::Attack
+            } else {
+                return Action::Move(path[idx + 1])
+            }
+        }
+
+        return Action::Nothing
     }
 }
