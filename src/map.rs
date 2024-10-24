@@ -1,6 +1,9 @@
 //! Map and Room Layout information
 
-use std::{collections::{HashMap, HashSet, VecDeque}, fmt::Display};
+use std::{
+    collections::{HashMap, HashSet, VecDeque},
+    fmt::Display,
+};
 
 use rand::{seq::SliceRandom, Rng};
 use slotmap::{new_key_type, SlotMap};
@@ -53,7 +56,7 @@ impl Map {
         self.0[room].move_into(enemy);
     }
 
-    /// Get's all enemies in a room 
+    /// Get's all enemies in a room
     pub fn enemies_in_room(&self, room: RoomId) -> &[EnemyId] {
         &self.0[room].occupied_by
     }
@@ -110,7 +113,10 @@ impl Map {
 
         // Generate viable rooms to spawn enemies in, cannot be directly connected to the main
         // rooms
-        let mut viable_spawn_rooms: Vec<_> = room_ids.into_iter().filter(|id| !self.0[*id].connects_to_any(&[&left, &right])).collect();
+        let mut viable_spawn_rooms: Vec<_> = room_ids
+            .into_iter()
+            .filter(|id| !self.0[*id].connects_to_any(&[&left, &right]))
+            .collect();
         let mut spawn_rooms = vec![];
         let spawn_rooms_count: usize = rng.gen_range(1..=4);
 
@@ -120,11 +126,14 @@ impl Map {
             }
         }
 
-        (RootRoomInfo {
-            root: office,
-            left,
-            right,
-        }, spawn_rooms)
+        (
+            RootRoomInfo {
+                root: office,
+                left,
+                right,
+            },
+            spawn_rooms,
+        )
     }
 
     /// Creates a path from one room to another room
@@ -195,7 +204,13 @@ impl Map {
     }
 
     /// Recursively builds a string to represent a room and its connected rooms
-    fn display_room(&self, room_id: RoomId, depth: usize, visited: &mut HashSet<RoomId>, output: &mut String) {
+    fn display_room(
+        &self,
+        room_id: RoomId,
+        depth: usize,
+        visited: &mut HashSet<RoomId>,
+        output: &mut String,
+    ) {
         if !visited.insert(room_id) {
             return;
         }
@@ -204,7 +219,13 @@ impl Map {
         let indent = "    ".repeat(depth);
 
         let enemies_in: String = room.occupied_by.iter().map(|_| "😈").collect();
-        output.push_str(&format!("{}Room {:?}: {}{}\n", indent, room_id, room.get_name(), enemies_in));
+        output.push_str(&format!(
+            "{}Room {:?}: {}{}\n",
+            indent,
+            room_id,
+            room.get_name(),
+            enemies_in
+        ));
 
         for &connected_room in &room.conencts_to {
             if !visited.contains(&connected_room) {
@@ -304,13 +325,13 @@ mod tests {
     fn path_gen_works() {
         let mut map = Map::default();
 
-        let mut room_a =  Room::default();
-        let mut room_b =  Room::default();
-        let mut room_c =  Room::default();
-        let mut room_d =  Room::default();
-        let mut room_e =  Room::default();
-        let room_f =  Room::default();
-        let room_g =  Room::default();
+        let mut room_a = Room::default();
+        let mut room_b = Room::default();
+        let mut room_c = Room::default();
+        let mut room_d = Room::default();
+        let mut room_e = Room::default();
+        let room_f = Room::default();
+        let room_g = Room::default();
 
         // Create path from a -> g, which will be a -> c -> d -> b -> g
 
@@ -352,7 +373,7 @@ mod tests {
         let default_enemy = Freak::default_test_enemy();
         let mut enemy_slot = SlotMap::default();
         let enemy_id = enemy_slot.insert(default_enemy);
- 
+
         map.register_enemy(enemy_id, enemy_spawn[0]);
 
         println!("{map}")

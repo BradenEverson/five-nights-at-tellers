@@ -41,12 +41,12 @@ impl EnemyBehavior for StraightPathBehavior {
         let idx = path.iter().position(|room| *room == current_location);
         if let Some(idx) = idx {
             if idx >= path.len() - 2 {
-                return vec![Action::Attack]
+                return vec![Action::Attack];
             } else {
-                return vec![Action::Move(path[idx + 1])]
+                return vec![Action::Move(path[idx + 1])];
             }
         }
 
-        return vec![Action::Nothing]
+        vec![Action::Nothing]
     }
 }

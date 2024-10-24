@@ -40,15 +40,18 @@ impl Default for Game {
         let mut enemies: SlotMap<EnemyId, Freak> = SlotMap::default();
 
         // Register all enemies we want in the game
-        let enemy_registry: Vec<Freak> = vec![
-            Freak::new("Teller", 200..350, StraightPathBehavior::default())
-        ];
+        let enemy_registry: Vec<Freak> = vec![Freak::new(
+            "Teller",
+            200..350,
+            StraightPathBehavior::default(),
+        )];
 
         for enemy in enemy_registry {
             enemies.insert(enemy);
         }
 
-        let state = GameState::default().with_enemies(&enemies.keys().collect::<Vec<_>>(), &mut rng);
+        let state =
+            GameState::default().with_enemies(&enemies.keys().collect::<Vec<_>>(), &mut rng);
 
         Self {
             enemies,
@@ -88,11 +91,9 @@ impl Game {
     /// Check if we're dead
     pub fn is_dead(&self) -> Option<String> {
         if self.state.dead {
-            if let Some(id) = self.state.get_enemy_in_room() {
-                Some(self.enemies[id].get_name().to_string())
-            } else {
-                None
-            }
+            self.state
+                .get_enemy_in_room()
+                .map(|id| self.enemies[id].get_name().to_string())
         } else {
             None
         }
@@ -105,7 +106,7 @@ impl Game {
             (true, true) => "Both Doors Closed",
             (true, _) => "Left Door Closed",
             (_, true) => "Right Door Closed",
-            _ => "Both Doors Open"
+            _ => "Both Doors Open",
         };
 
         self.state.map.0[self.state.office.root].set_name(format!("Office | {}", message));
@@ -158,7 +159,7 @@ impl Default for GameState {
             right_door: false,
             draw: DEFAULT_POWER_DRAW,
             dead: false,
-            ticks_needed_to_win: HOURS_TO_WIN * TICKS_PER_HOUR
+            ticks_needed_to_win: HOURS_TO_WIN * TICKS_PER_HOUR,
         }
     }
 }
@@ -187,7 +188,7 @@ impl GameState {
         self.ticks += 1;
 
         if self.ticks == self.ticks_needed_to_win {
-            return true
+            return true;
         }
 
         self.power -= self.draw;
