@@ -55,10 +55,31 @@ impl Default for Game {
     }
 }
 
+#[wasm_bindgen]
 impl Game {
     /// Ticks the game forward
     pub fn tick(&mut self) -> bool {
         self.state.tick(&mut self.enemies, &mut self.rng)
+    }
+
+    /// Create a new game (trait impls aren't accessible to wasm_bindgen
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Close the left door
+    pub fn toggle_left(&mut self) {
+        self.state.toggle_door(Door::Left)
+    }
+
+    /// Close the right door
+    pub fn toggle_right(&mut self) {
+        self.state.toggle_door(Door::Right)
+    }
+
+    /// Check the current power draw
+    pub fn power(&self) -> u32 {
+        self.state.power
     }
 }
 
