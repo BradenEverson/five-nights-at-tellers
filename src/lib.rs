@@ -85,9 +85,17 @@ impl Game {
         ((self.state.power as f64 / INITIAL_POWER as f64) * 100.0).max(0.0)
     }
 
-    /// Check that cams of a room, unless that room's camera is currently disabled
-    pub fn check_cams(&self, room: RoomId) -> Option<Vec<String>> {
-        todo!()
+    /// Check if we're dead
+    pub fn is_dead(&self) -> Option<String> {
+        if self.state.dead {
+            if let Some(id) = self.state.get_enemy_in_room() {
+                Some(self.enemies[id].get_name().to_string())
+            } else {
+                None
+            }
+        } else {
+            None
+        }
     }
 
     /// Render the current map
@@ -136,7 +144,8 @@ pub struct GameState {
 impl Default for GameState {
     fn default() -> Self {
         let mut map = Map::default();
-        let (office, spawn_points) = map.generate();
+        let mut rng = thread_rng();
+        let (office, spawn_points) = map.generate(&mut rng);
 
         GameState {
             cooldowns: HashMap::default(),
@@ -234,6 +243,16 @@ impl GameState {
             } else {
                 self.draw += POWER_DRAW_DOOR;
             }
+        }
+    }
+
+    /// Returns the first enemy in a room if it exists
+    pub fn get_enemy_in_room(&self) -> Option<EnemyId> {
+        let enemies_in_room = self.map.enemies_in_room(self.office.root);
+        if enemies_in_room.is_empty() {
+            None
+        } else {
+            Some(enemies_in_room[0])
         }
     }
 

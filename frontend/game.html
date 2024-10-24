@@ -126,14 +126,19 @@
             const office = document.getElementById("office");
 
             function tickGame() {
-                const gameOver = game.tick();
-                if (gameOver) {
-                    alert("Game Over!");
+                let won = game.tick();
+                if (won) {
+                    alert("You Won!");
                     clearInterval(gameInterval);
+                }
+                let enemy = game.is_dead();
+                if (enemy) {
+                    alert(`${enemy} got you`);
                 }
             }
 
             function updateDisplay() {
+                console.log(game.render());
                 powerDisplay.textContent = `Power: ${game.power_percent().toFixed(1)}%`;
             }
 

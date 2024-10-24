@@ -2,7 +2,7 @@
 
 use std::{collections::{HashMap, HashSet, VecDeque}, fmt::Display};
 
-use rand::{seq::SliceRandom, thread_rng, Rng};
+use rand::{seq::SliceRandom, Rng};
 use slotmap::{new_key_type, SlotMap};
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -53,9 +53,14 @@ impl Map {
         self.0[room].move_into(enemy);
     }
 
+    /// Get's all enemies in a room 
+    pub fn enemies_in_room(&self, room: RoomId) -> &[EnemyId] {
+        &self.0[room].occupied_by
+    }
+
     /// Generates a new layout, returning the ID of the office room and a list of good spawnable
     /// positions
-    pub fn generate(&mut self) -> (RootRoomInfo, Vec<RoomId>) {
+    pub fn generate<RNG: Rng>(&mut self, rng: &mut RNG) -> (RootRoomInfo, Vec<RoomId>) {
         let mut office = Room::default();
         let mut left = Room::default();
         let mut right = Room::default();
@@ -64,21 +69,30 @@ impl Map {
         left.set_name("Left Office Entrance");
         right.set_name("Right Office Entrance");
 
+        let mut hallway_left = Room::default();
+        let mut hallway_right = Room::default();
+
+        hallway_left.set_name("Left Hallway");
+        hallway_right.set_name("Right Hallway");
+
         let office = self.0.insert(office);
         let left = self.0.insert(left);
         let right = self.0.insert(right);
+        let hallway_left = self.0.insert(hallway_left);
+        let hallway_right = self.0.insert(hallway_right);
 
         self.connect_rooms(office, left);
         self.connect_rooms(office, right);
 
-        let mut rng = thread_rng();
+        self.connect_rooms(left, hallway_left);
+        self.connect_rooms(right, hallway_right);
 
         let additional_rooms: usize = rng.gen_range(10..=15);
-        let mut room_ids = vec![left, right];
+        let mut room_ids = vec![hallway_left, hallway_right];
 
         for _ in 0..additional_rooms {
             let new_room = self.0.insert(Room::default());
-            let existing_room = *room_ids.choose(&mut rng).unwrap();
+            let existing_room = *room_ids.choose(rng).unwrap();
 
             self.connect_rooms(new_room, existing_room);
             room_ids.push(new_room)
@@ -86,8 +100,8 @@ impl Map {
 
         let extra_connections: usize = rng.gen_range(1..=3);
         for _ in 0..extra_connections {
-            let room_a = *room_ids.choose(&mut rng).unwrap();
-            let room_b = *room_ids.choose(&mut rng).unwrap();
+            let room_a = *room_ids.choose(rng).unwrap();
+            let room_b = *room_ids.choose(rng).unwrap();
 
             if room_a != room_b && !self.0[room_a].conencts_to.contains(&room_b) {
                 self.connect_rooms(room_a, room_b);
@@ -279,6 +293,7 @@ impl Room {
 
 #[cfg(test)]
 mod tests {
+    use rand::thread_rng;
     use slotmap::SlotMap;
 
     use crate::enemies::Freak;
@@ -323,7 +338,8 @@ mod tests {
     #[test]
     fn map_generation_is_good() {
         let mut map = Map::default();
-        map.generate();
+        let mut rng = thread_rng();
+        map.generate(&mut rng);
 
         println!("{map}")
     }
@@ -331,7 +347,8 @@ mod tests {
     #[test]
     fn map_generation_with_enemies_is_good() {
         let mut map = Map::default();
-        let (_, enemy_spawn) = map.generate();
+        let mut rng = thread_rng();
+        let (_, enemy_spawn) = map.generate(&mut rng);
         let default_enemy = Freak::default_test_enemy();
         let mut enemy_slot = SlotMap::default();
         let enemy_id = enemy_slot.insert(default_enemy);

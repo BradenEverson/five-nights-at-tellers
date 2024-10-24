@@ -41,6 +41,11 @@ export class Game {
    */
   check_cams(room: RoomId): (string)[] | undefined;
   /**
+   * Check if we're dead
+   * @returns {string | undefined}
+   */
+  is_dead(): string | undefined;
+  /**
    * Render the current map
    * @returns {string}
    */
@@ -66,6 +71,7 @@ export interface InitOutput {
   readonly game_toggle_right: (a: number) => void;
   readonly game_power_percent: (a: number) => number;
   readonly game_check_cams: (a: number, b: number, c: number) => void;
+  readonly game_is_dead: (a: number, b: number) => void;
   readonly game_render: (a: number, b: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
