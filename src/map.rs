@@ -1,6 +1,6 @@
 //! Map and Room Layout information
 
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 use slotmap::{new_key_type, SlotMap};
 
@@ -77,22 +77,29 @@ impl Map {
     pub fn generate_path(&self, from: RoomId, to: RoomId) -> Option<Vec<RoomId>> {
         let mut search_queue = VecDeque::new();
         let mut seen = HashSet::new();
+        let mut predecessors = HashMap::new();
 
         search_queue.push_front(from);
+        seen.insert(from);
 
         while let Some(check_room) = search_queue.pop_back() {
-            if !seen.insert(check_room) {
-                continue;
-            }
-
             if check_room == to {
-                // TODO: Right now we basically just return *if* a path exists, not what it is.
-                // Will probably need to get recursive and weird with it
-                return Some(vec![])
+                let mut path = Vec::new();
+                let mut current = to;
+                while current != from {
+                    path.push(current);
+                    current = *predecessors.get(&current)?;
+                }
+                path.push(from);
+                path.reverse();
+                return Some(path);
             }
 
-            for room in &self.0[check_room].conencts_to {
-                search_queue.push_front(*room)
+            for &next_room in &self.0[check_room].conencts_to {
+                if seen.insert(next_room) {
+                    search_queue.push_front(next_room);
+                    predecessors.insert(next_room, check_room);
+                }
             }
         }
 
@@ -176,5 +183,45 @@ impl Room {
     /// Enables camera viewing for this room
     pub fn enable_camera(&mut self) {
         self.disabled = false
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Map, Room};
+
+    #[test]
+    fn path_gen_works() {
+        let mut map = Map::default();
+
+        let mut room_a =  Room::default();
+        let mut room_b =  Room::default();
+        let mut room_c =  Room::default();
+        let mut room_d =  Room::default();
+        let mut room_e =  Room::default();
+        let room_f =  Room::default();
+        let room_g =  Room::default();
+
+        // Create path from a -> g, which will be a -> c -> d -> b -> g
+
+        let room_g = map.0.insert(room_g);
+        room_b.connect_to(room_g);
+        let room_b = map.0.insert(room_b);
+        room_d.connect_to(room_b);
+
+        // Create off shoots
+        let room_f = map.0.insert(room_f);
+        room_e.connect_to(room_f);
+        let room_e = map.0.insert(room_e);
+        room_d.connect_to(room_e);
+
+        let room_d = map.0.insert(room_d);
+        room_c.connect_to(room_d);
+        let room_c = map.0.insert(room_c);
+        room_a.connect_to(room_c);
+        let room_a = map.0.insert(room_a);
+
+        let path = map.generate_path(room_a, room_g).expect("Generate path");
+        assert_eq!(path, [room_a, room_c, room_d, room_b, room_g]);
     }
 }
