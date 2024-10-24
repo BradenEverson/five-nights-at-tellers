@@ -45,8 +45,15 @@ impl EnemyBehavior for StraightPathBehavior {
             } else {
                 return vec![Action::Move(path[idx + 1])];
             }
-        }
+        } else {
+            let ideal_path = curr_state
+                .map
+                .generate_path(current_location, curr_state.office.root);
+            if let Some(path) = ideal_path {
+                self.ideal_path = Some(path);
+            }
 
-        vec![Action::Nothing]
+            vec![Action::Nothing]
+        }
     }
 }

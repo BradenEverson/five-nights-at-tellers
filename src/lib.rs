@@ -41,7 +41,7 @@ impl Default for Game {
 
         // Register all enemies we want in the game
         let enemy_registry: Vec<Freak> = vec![Freak::new(
-            "Teller",
+            "teller",
             200..350,
             StraightPathBehavior::default(),
         )];

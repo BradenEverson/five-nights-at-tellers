@@ -59,12 +59,23 @@
                 cursor: pointer;
                 text-shadow: 2px 2px 4px #000;
                 transition: all 0.3s ease;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
             }
 
             .door-button:hover {
                 background-color: rgba(255, 255, 255, 0.3);
                 border-color: #ff6347;
                 color: #ff6347;
+            }
+
+            #left-door-button {
+                left: 20px;
+            }
+
+            #right-door-button {
+                right: 20px;
             }
 
             #map-display {
@@ -82,28 +93,35 @@
                 z-index: 100;
             }
 
-            .camera-view {
+            #jumpscare {
+                display: none;
                 position: absolute;
-                width: 100px;
-                height: 100px;
-                background-color: rgba(255, 255, 255, 0.1);
-                border: 2px solid #00ff00;
-                cursor: pointer;
-                transition: background-color 0.3s;
+                top: 0;
+                left: 0;
+                width: 120vw;
+                height: 120vh;
+                background-size: cover;
+                background-position: center;
+                z-index: 200;
+                animation: shake 0.5s infinite;
             }
 
-            .camera-view:hover {
-                background-color: rgba(255, 255, 255, 0.3);
-            }
-
-            #camera-1 {
-                top: 40%;
-                left: 10%;
-            }
-
-            #camera-2 {
-                top: 40%;
-                right: 10%;
+            @keyframes shake {
+                0% {
+                    transform: translate(0, 0);
+                }
+                25% {
+                    transform: translate(10px, -10px);
+                }
+                50% {
+                    transform: translate(-10px, 10px);
+                }
+                75% {
+                    transform: translate(10px, 10px);
+                }
+                100% {
+                    transform: translate(-10px, -10px);
+                }
             }
         </style>
     </head>
@@ -112,8 +130,12 @@
 
         <div id="office-container">
             <div id="office"></div>
-
+            <button id="left-door-button" class="door-button">Left Door</button>
+            <button id="right-door-button" class="door-button">
+                Right Door
+            </button>
             <pre id="map-display"></pre>
+            <div id="jumpscare"></div>
         </div>
 
         <script type="module">
@@ -124,6 +146,10 @@
             const powerDisplay = document.getElementById("power-display");
             const mapDisplay = document.getElementById("map-display");
             const office = document.getElementById("office");
+            const jumpscare = document.getElementById("jumpscare");
+            const leftDoorButton = document.getElementById("left-door-button");
+            const rightDoorButton =
+                document.getElementById("right-door-button");
 
             function tickGame() {
                 let won = game.tick();
@@ -133,13 +159,37 @@
                 }
                 let enemy = game.is_dead();
                 if (enemy) {
-                    alert(`${enemy} got you`);
+                    showJumpscare(enemy);
                 }
+            }
+
+            function showJumpscare(enemy) {
+                jumpscare.style.backgroundImage = `url('./enemies/${enemy}/jumpscare.png')`;
+                jumpscare.style.display = "block";
+
+                setTimeout(() => {
+                    jumpscare.style.display = "none";
+                    location.reload();
+                }, 3000);
             }
 
             function updateDisplay() {
                 console.log(game.render());
                 powerDisplay.textContent = `Power: ${game.power_percent().toFixed(1)}%`;
+            }
+
+            function updateButtonVisibility(panX) {
+                if (panX > -5) {
+                    leftDoorButton.style.opacity = 1;
+                } else {
+                    leftDoorButton.style.opacity = 0;
+                }
+
+                if (panX < -40) {
+                    rightDoorButton.style.opacity = 1;
+                } else {
+                    rightDoorButton.style.opacity = 0;
+                }
             }
 
             document.addEventListener("mousemove", (e) => {
@@ -150,13 +200,27 @@
                 const panY = Math.max(-5, Math.min((0.5 - y) * 5, 0));
 
                 office.style.transform = `translate(${panX}%, ${panY}%)`;
+
+                updateButtonVisibility(panX);
             });
 
             window.addEventListener("resize", () => {
                 office.style.transform = "translate(-22%, 0%)";
             });
 
-            const tickInterval = setInterval(tickGame, 50);
+            document
+                .getElementById("left-door-button")
+                .addEventListener("click", () => {
+                    game.toggle_left();
+                });
+
+            document
+                .getElementById("right-door-button")
+                .addEventListener("click", () => {
+                    game.toggle_right();
+                });
+
+            const tickInterval = setInterval(tickGame, 10);
             const updateInterval = setInterval(updateDisplay, 1500);
             updateDisplay();
         </script>
