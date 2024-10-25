@@ -46,9 +46,9 @@ impl Default for Game {
             StraightPathBehavior::default(),
         )];
 
-        /*for enemy in enemy_registry {
+        for enemy in enemy_registry {
             enemies.insert(enemy);
-        }*/
+        }
 
         let state =
             GameState::default().with_enemies(&enemies.keys().collect::<Vec<_>>(), &mut rng);
@@ -78,7 +78,7 @@ impl Game {
         let hours = (self.state.ticks / TICKS_PER_HOUR) as u8;
         match hours {
             0 => 12,
-            _ => hours
+            _ => hours,
         }
     }
 
