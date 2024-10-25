@@ -1,309 +1,319 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Five Nights at Ferris's</title>
-        <style>
-            body {
-                font-family: "Courier New", Courier, monospace;
-                margin: 0;
-                padding: 0;
-                height: 100vh;
-                overflow: hidden;
-                display: flex;
-                justify-content: flex-start;
-                align-items: flex-end;
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Five Nights at Ferris's</title>
+    <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-end;
+        }
+
+        #office-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #office {
+            position: absolute;
+            width: 200%;
+            height: 125%;
+            background: url("./image/office.png") no-repeat;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s ease;
+        }
+
+        #power-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6347;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 2px solid #ff6347;
+            z-index: 100;
+        }
+
+        #time-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6347;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 2px solid #ff6347;
+            z-index: 100;
+        }
+
+        .door-button {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #00ff00;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px 30px;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            margin: 15px;
+            cursor: pointer;
+            text-shadow: 2px 2px 4px #000;
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .door-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-color: #ff6347;
+            color: #ff6347;
+        }
+
+        #left-door-button {
+            left: 20px;
+        }
+
+        #right-door-button {
+            right: 20px;
+        }
+
+        #map-display {
+            display: none;
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #32cd32;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid #32cd32;
+            font-size: 18px;
+            width: 300px;
+            height: 200px;
+            text-shadow: 2px 2px 4px #000;
+            z-index: 100;
+        }
+
+        #camera-button {
+            display: none;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ff6347;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #ff6347;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 400;
+        }
+
+        #jumpscare {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 120vw;
+            height: 120vh;
+            background-size: cover;
+            background-position: center;
+            z-index: 1000;
+            animation: shake 0.5s infinite;
+        }
+
+        #camera-hud {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #00ff00;
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 300;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #camera-label {
+            padding: 20px;
+            background-color: rgba(0, 255, 0, 0.3);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(0, 0);
             }
 
-            #office-container {
-                position: relative;
-                width: 100vw;
-                height: 100vh;
-                overflow: hidden;
+            25% {
+                transform: translate(10px, -10px);
             }
 
-            #office {
-                position: absolute;
-                width: 200%;
-                height: 125%;
-                background: url("./image/office.png") no-repeat;
-                background-size: cover;
-                background-position: center;
-                transition: transform 0.3s ease;
+            50% {
+                transform: translate(-10px, 10px);
             }
 
-            #power-display {
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                font-size: 24px;
-                font-weight: bold;
-                color: #ff6347;
-                background-color: rgba(0, 0, 0, 0.7);
-                padding: 10px 20px;
-                border-radius: 5px;
-                border: 2px solid #ff6347;
-                z-index: 100;
+            75% {
+                transform: translate(10px, 10px);
             }
 
-            #time-display {
-                position: absolute;
-                top: 20px;
-                left: 20px;
-                font-size: 24px;
-                font-weight: bold;
-                color: #ff6347;
-                background-color: rgba(0, 0, 0, 0.7);
-                padding: 10px 20px;
-                border-radius: 5px;
-                border: 2px solid #ff6347;
-                z-index: 100;
+            100% {
+                transform: translate(-10px, -10px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="power-display">Power: 100%</div>
+    <div id="time-display">12 AM</div>
+
+    <div id="office-container">
+        <div id="office"></div>
+        <button id="left-door-button" class="door-button">Left Door</button>
+        <button id="right-door-button" class="door-button">
+            Right Door
+        </button>
+        <pre id="map-display"></pre>
+        <div id="jumpscare"></div>
+    </div>
+
+    <button id="camera-button">Camera</button>
+
+    <div id="camera-hud">
+        <canvas id="camera-ui"></canvas>
+    </div>
+
+    <script type="module">
+        import init, { Game } from "./wasm/five_nights_at_ferris.js";
+        await init();
+
+        let game = Game.new();
+        const powerDisplay = document.getElementById("power-display");
+        const clockDisplay = document.getElementById("time-display");
+        const mapDisplay = document.getElementById("map-display");
+        const office = document.getElementById("office");
+        const jumpscare = document.getElementById("jumpscare");
+        const leftDoorButton = document.getElementById("left-door-button");
+        const rightDoorButton =
+            document.getElementById("right-door-button");
+        const cameraButton = document.getElementById("camera-button");
+        const cameraHud = document.getElementById("camera-hud");
+
+        const canvas = document.getElementById("camera-ui");
+        const ctx = canvas.getContext("2d");
+
+        function tickGame() {
+            let won = game.tick();
+            if (won) {
+                alert("You Won!");
+                clearInterval(gameInterval);
+                location.reload();
+            }
+            let enemy = game.is_dead();
+            if (enemy) {
+                showJumpscare(enemy);
+            }
+        }
+
+        function showJumpscare(enemy) {
+            jumpscare.style.backgroundImage = `url('./enemies/${enemy}/jumpscare.png')`;
+            jumpscare.style.display = "block";
+
+            setTimeout(() => {
+                jumpscare.style.display = "none";
+                location.reload();
+            }, 3000);
+        }
+
+        function updateDisplay() {
+            console.log(game.render());
+            powerDisplay.textContent = `Power: ${game.power_percent().toFixed(1)}%`;
+            clockDisplay.textContent = `${game.get_time()} AM`;
+        }
+
+        function updateButtonVisibility(panX) {
+            if (panX > -5) {
+                leftDoorButton.style.opacity = 1;
+            } else {
+                leftDoorButton.style.opacity = 0;
             }
 
-            .door-button {
-                background-color: rgba(255, 255, 255, 0.1);
-                color: #00ff00;
-                font-size: 20px;
-                font-weight: bold;
-                padding: 15px 30px;
-                border: 2px solid #00ff00;
-                border-radius: 5px;
-                margin: 15px;
-                cursor: pointer;
-                text-shadow: 2px 2px 4px #000;
-                transition: all 0.3s ease;
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
+            if (panX < -40) {
+                rightDoorButton.style.opacity = 1;
+            } else {
+                rightDoorButton.style.opacity = 0;
             }
+        }
 
-            .door-button:hover {
-                background-color: rgba(255, 255, 255, 0.3);
-                border-color: #ff6347;
-                color: #ff6347;
+        document.addEventListener("mousemove", (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            const panX = Math.max(-28, Math.min((0.5 - x) * 100, 22)) - 22;
+            const panY = Math.max(-5, Math.min((0.5 - y) * 5, 0));
+
+            office.style.transform = `translate(${panX}%, ${panY}%)`;
+
+            updateButtonVisibility(panX);
+
+            if (panY < -2) {
+                cameraButton.style.display = "block";
+            } else {
+                cameraButton.style.display = "none";
             }
+        });
 
-            #left-door-button {
-                left: 20px;
-            }
+        window.addEventListener("resize", () => {
+            office.style.transform = "translate(-22%, 0%)";
+        });
 
-            #right-door-button {
-                right: 20px;
-            }
-
-            #map-display {
-                display: none;
-                position: absolute;
-                background-color: rgba(0, 0, 0, 0.8);
-                color: #32cd32;
-                padding: 20px;
-                border-radius: 5px;
-                border: 2px solid #32cd32;
-                font-size: 18px;
-                width: 300px;
-                height: 200px;
-                text-shadow: 2px 2px 4px #000;
-                z-index: 100;
-            }
-
-            #camera-button {
-                display: none;
-                position: absolute;
-                bottom: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-                background-color: rgba(255, 255, 255, 0.2);
-                color: #ff6347;
-                font-size: 24px;
-                font-weight: bold;
-                padding: 10px 20px;
-                border: 2px solid #ff6347;
-                border-radius: 5px;
-                cursor: pointer;
-                z-index: 400;
-            }
-
-            #jumpscare {
-                display: none;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 120vw;
-                height: 120vh;
-                background-size: cover;
-                background-position: center;
-                z-index: 1000;
-                animation: shake 0.5s infinite;
-            }
-
-            #camera-hud {
-                display: none;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background-color: rgba(0, 0, 0, 0.9);
-                color: #00ff00;
-                font-size: 36px;
-                font-weight: bold;
-                text-align: center;
-                z-index: 300;
-                justify-content: center;
-                align-items: center;
-            }
-
-            #camera-label {
-                padding: 20px;
-                background-color: rgba(0, 255, 0, 0.3);
-                border: 2px solid #00ff00;
-                border-radius: 10px;
-            }
-
-            @keyframes shake {
-                0% {
-                    transform: translate(0, 0);
-                }
-                25% {
-                    transform: translate(10px, -10px);
-                }
-                50% {
-                    transform: translate(-10px, 10px);
-                }
-                75% {
-                    transform: translate(10px, 10px);
-                }
-                100% {
-                    transform: translate(-10px, -10px);
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div id="power-display">Power: 100%</div>
-        <div id="time-display">12 AM</div>
-
-        <div id="office-container">
-            <div id="office"></div>
-            <button id="left-door-button" class="door-button">Left Door</button>
-            <button id="right-door-button" class="door-button">
-                Right Door
-            </button>
-            <pre id="map-display"></pre>
-            <div id="jumpscare"></div>
-        </div>
-
-        <button id="camera-button">Camera</button>
-
-        <div id="camera-hud">
-            <div id="camera-label">CAMERA DISPLAY</div>
-        </div>
-
-        <script type="module">
-            import init, { Game } from "./wasm/five_nights_at_ferris.js";
-            await init();
-
-            let game = Game.new();
-            const powerDisplay = document.getElementById("power-display");
-            const clockDisplay = document.getElementById("time-display");
-            const mapDisplay = document.getElementById("map-display");
-            const office = document.getElementById("office");
-            const jumpscare = document.getElementById("jumpscare");
-            const leftDoorButton = document.getElementById("left-door-button");
-            const rightDoorButton =
-                document.getElementById("right-door-button");
-            const cameraButton = document.getElementById("camera-button");
-            const cameraHud = document.getElementById("camera-hud");
-
-            function tickGame() {
-                let won = game.tick();
-                if (won) {
-                    alert("You Won!");
-                    clearInterval(gameInterval);
-                    location.reload();
-                }
-                let enemy = game.is_dead();
-                if (enemy) {
-                    showJumpscare(enemy);
-                }
-            }
-
-            function showJumpscare(enemy) {
-                jumpscare.style.backgroundImage = `url('./enemies/${enemy}/jumpscare.png')`;
-                jumpscare.style.display = "block";
-
-                setTimeout(() => {
-                    jumpscare.style.display = "none";
-                    location.reload();
-                }, 3000);
-            }
-
-            function updateDisplay() {
-                console.log(game.render());
-                powerDisplay.textContent = `Power: ${game.power_percent().toFixed(1)}%`;
-                clockDisplay.textContent = `${game.get_time()} AM`;
-            }
-
-            function updateButtonVisibility(panX) {
-                if (panX > -5) {
-                    leftDoorButton.style.opacity = 1;
-                } else {
-                    leftDoorButton.style.opacity = 0;
-                }
-
-                if (panX < -40) {
-                    rightDoorButton.style.opacity = 1;
-                } else {
-                    rightDoorButton.style.opacity = 0;
-                }
-            }
-
-            document.addEventListener("mousemove", (e) => {
-                const x = e.clientX / window.innerWidth;
-                const y = e.clientY / window.innerHeight;
-
-                const panX = Math.max(-28, Math.min((0.5 - x) * 100, 22)) - 22;
-                const panY = Math.max(-5, Math.min((0.5 - y) * 5, 0));
-
-                office.style.transform = `translate(${panX}%, ${panY}%)`;
-
-                updateButtonVisibility(panX);
-
-                if (panY < -2) {
-                    cameraButton.style.display = "block";
-                } else {
-                    cameraButton.style.display = "none";
-                }
+        document
+            .getElementById("left-door-button")
+            .addEventListener("click", () => {
+                game.toggle_left();
             });
 
-            window.addEventListener("resize", () => {
-                office.style.transform = "translate(-22%, 0%)";
+        document
+            .getElementById("right-door-button")
+            .addEventListener("click", () => {
+                game.toggle_right();
             });
 
-            document
-                .getElementById("left-door-button")
-                .addEventListener("click", () => {
-                    game.toggle_left();
-                });
+        cameraButton.addEventListener("click", () => {
+            if (cameraHud.style.display == "flex") {
+                cameraHud.style.display = "none";
+            } else {
+                cameraHud.style.display = "flex";
+            }
+        });
 
-            document
-                .getElementById("right-door-button")
-                .addEventListener("click", () => {
-                    game.toggle_right();
-                });
+        const tickInterval = setInterval(tickGame, 20);
+        const updateInterval = setInterval(updateDisplay, 1500);
+        updateDisplay();
+    </script>
+</body>
 
-            cameraButton.addEventListener("click", () => {
-                if (cameraHud.style.display == "flex") {
-                    cameraHud.style.display = "none";
-                } else {
-                    cameraHud.style.display = "flex";
-                }
-            });
-
-            const tickInterval = setInterval(tickGame, 20);
-            const updateInterval = setInterval(updateDisplay, 1500);
-            updateDisplay();
-        </script>
-    </body>
 </html>
