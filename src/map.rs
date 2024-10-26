@@ -11,6 +11,8 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::enemies::EnemyId;
 
+pub mod export;
+
 new_key_type! {
     /// A room's ID
     #[wasm_bindgen]

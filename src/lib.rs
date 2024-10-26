@@ -7,7 +7,7 @@ use enemies::{impls::generic::StraightPathBehavior, EnemyId, Freak};
 use map::{Map, RoomId, RootRoomInfo};
 use rand::{rngs::ThreadRng, seq::SliceRandom, thread_rng, Rng};
 use slotmap::SlotMap;
-use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
 pub mod enemies;
 pub mod map;
@@ -66,6 +66,11 @@ impl Game {
     /// Ticks the game forward
     pub fn tick(&mut self) -> bool {
         self.state.tick(&mut self.enemies, &mut self.rng)
+    }
+
+    /// Gets the map context as a JsValue
+    pub fn get_map(&self) -> JsValue {
+        self.state.map.serialize_room_layout(&self.state.office)
     }
 
     /// Create a new game (trait impls aren't accessible to wasm_bindgen

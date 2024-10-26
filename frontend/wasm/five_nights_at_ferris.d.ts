@@ -17,6 +17,11 @@ export class Game {
    */
   tick(): boolean;
   /**
+   * Gets the map context as a JsValue
+   * @returns {any}
+   */
+  get_map(): any;
+  /**
    * Create a new game (trait impls aren't accessible to wasm_bindgen
    * @returns {Game}
    */
@@ -65,6 +70,7 @@ export interface InitOutput {
   readonly __wbg_enemyid_free: (a: number, b: number) => void;
   readonly __wbg_game_free: (a: number, b: number) => void;
   readonly game_tick: (a: number) => number;
+  readonly game_get_map: (a: number) => number;
   readonly game_new: () => number;
   readonly game_get_time: (a: number) => number;
   readonly game_toggle_left: (a: number) => void;
@@ -72,6 +78,8 @@ export interface InitOutput {
   readonly game_power_percent: (a: number) => number;
   readonly game_is_dead: (a: number, b: number) => void;
   readonly game_render: (a: number, b: number) => void;
+  readonly __wbindgen_malloc: (a: number, b: number) => number;
+  readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
