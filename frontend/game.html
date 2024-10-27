@@ -33,7 +33,7 @@
 
             let game = Game.new();
             let rooms = game.get_map();
-            let view = 1;
+            let view = 2;
 
             const powerDisplay = document.getElementById("power-display");
             const clockDisplay = document.getElementById("time-display");
@@ -209,6 +209,7 @@
 
                 rooms.forEach((room) => {
                     if (
+                        room.id.idx != 1 &&
                         clickX >= room.y &&
                         clickX <= room.y + room.width &&
                         clickY >= room.x + 50 &&
