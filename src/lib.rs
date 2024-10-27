@@ -16,6 +16,8 @@ pub mod map;
 pub const POWER_DRAW_DOOR: i32 = 100;
 /// How much power is idly drawn
 pub const DEFAULT_POWER_DRAW: i32 = 10;
+/// How much power being on the cameras draws
+pub const CAMERA_ON_DRAW: i32 = 25;
 /// How much power you start with
 pub const INITIAL_POWER: i32 = 500_000;
 /// How many game ticks we need to win
@@ -87,6 +89,11 @@ impl Game {
         }
     }
 
+    /// Toggles the camera state
+    pub fn toggle_cameras(&mut self) {
+        self.state.toggle_cameras();
+    }
+
     /// Close the left door
     pub fn toggle_left(&mut self) {
         self.state.toggle_door(Door::Left)
@@ -146,6 +153,8 @@ pub struct GameState {
     left_door: bool,
     /// If the right door is closed
     right_door: bool,
+    /// Are the cameras on
+    cameras_on: bool,
     /// How much power is left
     power: i32,
     /// The current power draw (per tick)
@@ -171,6 +180,7 @@ impl Default for GameState {
             power: INITIAL_POWER,
             left_door: false,
             right_door: false,
+            cameras_on: false,
             draw: DEFAULT_POWER_DRAW,
             dead: false,
             ticks_needed_to_win: HOURS_TO_WIN * TICKS_PER_HOUR,
@@ -236,6 +246,17 @@ impl GameState {
             true
         } else {
             false
+        }
+    }
+
+    /// Toggles the cameras and sets the appropriate new power draw
+    pub fn toggle_cameras(&mut self) {
+        self.cameras_on = !self.cameras_on;
+
+        if self.cameras_on {
+            self.draw += CAMERA_ON_DRAW
+        } else {
+            self.draw -= CAMERA_ON_DRAW
         }
     }
 

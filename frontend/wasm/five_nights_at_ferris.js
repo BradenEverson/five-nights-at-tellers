@@ -266,6 +266,12 @@ export class Game {
         return ret;
     }
     /**
+     * Toggles the camera state
+     */
+    toggle_cameras() {
+        wasm.game_toggle_cameras(this.__wbg_ptr);
+    }
+    /**
      * Close the left door
      */
     toggle_left() {

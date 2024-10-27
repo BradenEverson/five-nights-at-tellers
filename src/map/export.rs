@@ -49,16 +49,16 @@ impl Map {
         while let Some(room) = queue.pop_front() {
             // Find self's coord, create CameraNode from that and push it to vec
             let (node_x, node_y) = coords[&room];
-            let node = CameraNode::new(room, self.0[room].get_name(), node_x, node_y, 40.0, 40.0, self.0[room].conencts_to.clone());
+            let node = CameraNode::new(room, self.0[room].get_name(), node_x, node_y, 12.0, 12.0, self.0[room].conencts_to.clone());
             room_nodes.push(node);
 
-            y += 50.0;
-            let mut local_x = -50.0;
+            y += 16.0;
+            let mut local_x = -16.0;
 
             for connection in &self.0[room].conencts_to {
                 if !coords.contains_key(connection) {
-                    coords.insert(room, (local_x, y));
-                    local_x += 50.0;
+                    coords.insert(*connection, (local_x, y));
+                    local_x += 16.0;
                 }
                 if !seen.contains(connection) {
                     queue.push_back(*connection)
@@ -68,6 +68,6 @@ impl Map {
             seen.insert(room);
         }
 
-        serde_wasm_bindgen::to_value(&room_nodes).unwrap()
+        serde_wasm_bindgen::to_value(&room_nodes).expect("Failed to serialize")
     }
 }
