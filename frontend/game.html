@@ -24,6 +24,7 @@
         <button id="camera-button">Camera</button>
 
         <div id="camera-hud">
+            <div class="tv-static"></div>
             <canvas id="camera-status"></canvas>
             <canvas id="camera-ui"></canvas>
         </div>
@@ -62,7 +63,6 @@
                 let won = game.tick();
                 if (won) {
                     alert("You Won!");
-                    clearInterval(gameInterval);
                     window.location.href = "/";
                 }
                 let enemy = game.is_dead();
@@ -164,7 +164,7 @@
             function updateRealTimeDisplay() {
                 let cam = game.get_room(BigInt(view));
                 const camImage = new Image();
-                camImage.src = "./rooms/0.png"; // Change this to the appropriate path for your image
+                camImage.src = "./rooms/" + view + ".png";
                 camImage.onload = () => {
                     statusCtx.clearRect(
                         0,
@@ -180,6 +180,14 @@
                         cameraStatusCanvas.height,
                     );
                 };
+
+                cam.forEach((enemy_name) => {
+                    const enemyImage = new Image();
+                    enemyImage.src = `./enemies/${enemy_name}/cams.png`;
+                    enemyImage.onload = () => {
+                        statusCtx.drawImage(enemyImage, 125, 70, 50, 50);
+                    };
+                });
 
                 let left_closed = game.is_left_closed();
                 let right_closed = game.is_right_closed();

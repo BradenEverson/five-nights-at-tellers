@@ -52,8 +52,8 @@ impl Map {
             let node = CameraNode::new(room, self.0[room].get_name(), node_x, node_y, 12.0, 12.0, self.0[room].conencts_to.clone());
             room_nodes.push(node);
 
-            y += 16.0;
             let mut local_x = -16.0;
+            y += 16.0;
 
             for connection in &self.0[room].conencts_to {
                 if !coords.contains_key(connection) {

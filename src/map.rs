@@ -92,7 +92,7 @@ impl Map {
         self.connect_rooms(left, hallway_left);
         self.connect_rooms(right, hallway_right);
 
-        let additional_rooms: usize = rng.gen_range(10..=15);
+        let additional_rooms: usize = rng.gen_range(7..=9);
         let mut room_ids = vec![hallway_left, hallway_right];
 
         for _ in 0..additional_rooms {

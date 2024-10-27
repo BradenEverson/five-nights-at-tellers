@@ -93,10 +93,9 @@ impl Game {
     pub fn get_room(&self, room: u64) -> Option<Vec<String>> {
         let room = slotmap::KeyData::from_ffi(room);
         let room = &self.state.map.0[room.into()];
-        let (name, enemies) = room.get_cams()?; 
+        let (_, enemies) = room.get_cams()?; 
 
         let mut res = vec![];
-        res.push(name.to_string());
 
         for enemy in enemies {
             res.push(self.enemies[*enemy].get_name().to_string())
