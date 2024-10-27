@@ -24,6 +24,7 @@
         <button id="camera-button">Camera</button>
 
         <div id="camera-hud">
+            <pre id="camera-status"></pre>
             <canvas id="camera-ui"></canvas>
         </div>
         <script type="module">
@@ -33,8 +34,6 @@
             let game = Game.new();
             let rooms = game.get_map();
             let view = 1;
-
-            console.log(game.get_room(BigInt(view)));
 
             const powerDisplay = document.getElementById("power-display");
             const clockDisplay = document.getElementById("time-display");
@@ -46,6 +45,7 @@
             const cameraButton = document.getElementById("camera-button");
             const cameraHud = document.getElementById("camera-hud");
             const noPower = document.getElementById("vignette");
+            const cameraStatus = document.getElementById("camera-status");
 
             const canvas = document.getElementById("camera-ui");
             const ctx = canvas.getContext("2d");
@@ -148,6 +148,11 @@
                 });
             }
 
+            function updateCams() {
+                let room = game.get_room(BigInt(view));
+                cameraStatus.textContent = String(room);
+            }
+
             canvas.addEventListener("click", (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const clickX = e.clientX - rect.left - 25;
@@ -211,6 +216,7 @@
 
             const tickInterval = setInterval(tickGame, 20);
             const updateInterval = setInterval(updateDisplay, 1500);
+            const updateCamState = setInterval(updateCams, 750);
             updateDisplay();
             drawRooms();
         </script>
