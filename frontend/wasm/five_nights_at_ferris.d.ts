@@ -32,6 +32,12 @@ export class Game {
    */
   get_time(): number;
   /**
+   * Gets a snapshot of what the current camera room's name is and what enemies are in it
+   * @param {bigint} room
+   * @returns {(string)[] | undefined}
+   */
+  get_room(room: bigint): (string)[] | undefined;
+  /**
    * Toggles the camera state
    */
   toggle_cameras(): void;
@@ -43,6 +49,16 @@ export class Game {
    * Close the right door
    */
   toggle_right(): void;
+  /**
+   * Is left door closed?
+   * @returns {boolean}
+   */
+  is_left_closed(): boolean;
+  /**
+   * Is right door closed?
+   * @returns {boolean}
+   */
+  is_right_closed(): boolean;
   /**
    * Check the current power draw
    * @returns {number}
@@ -76,9 +92,12 @@ export interface InitOutput {
   readonly game_get_map: (a: number) => number;
   readonly game_new: () => number;
   readonly game_get_time: (a: number) => number;
+  readonly game_get_room: (a: number, b: number, c: number) => void;
   readonly game_toggle_cameras: (a: number) => void;
   readonly game_toggle_left: (a: number) => void;
   readonly game_toggle_right: (a: number) => void;
+  readonly game_is_left_closed: (a: number) => number;
+  readonly game_is_right_closed: (a: number) => number;
   readonly game_power_percent: (a: number) => number;
   readonly game_is_dead: (a: number, b: number) => void;
   readonly game_render: (a: number, b: number) => void;

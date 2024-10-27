@@ -26,7 +26,6 @@
         <div id="camera-hud">
             <canvas id="camera-ui"></canvas>
         </div>
-
         <script type="module">
             import init, { Game } from "./wasm/five_nights_at_ferris.js";
             await init();
@@ -34,6 +33,8 @@
             let game = Game.new();
             let rooms = game.get_map();
             let view = 1;
+
+            console.log(game.get_room(BigInt(view)));
 
             const powerDisplay = document.getElementById("power-display");
             const clockDisplay = document.getElementById("time-display");
@@ -119,7 +120,6 @@
             function drawRooms() {
                 const ids_to_coords = new Map();
                 rooms.forEach((room) => {
-                    // Register x, y to an ID -> coords HashMap for usage later
                     ids_to_coords.set(room.id.idx, [room.x, room.y]);
                 });
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -147,6 +147,24 @@
                     );
                 });
             }
+
+            canvas.addEventListener("click", (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clickX = e.clientX - rect.left - 25;
+                const clickY = e.clientY - rect.top - 25;
+
+                rooms.forEach((room) => {
+                    if (
+                        clickX >= room.y &&
+                        clickX <= room.y + room.width &&
+                        clickY >= room.x + 50 &&
+                        clickY <= room.x + 50 + room.height
+                    ) {
+                        view = room.id.idx;
+                        drawRooms();
+                    }
+                });
+            });
 
             document.addEventListener("mousemove", (e) => {
                 const x = e.clientX / window.innerWidth;

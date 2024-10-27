@@ -89,6 +89,22 @@ impl Game {
         }
     }
 
+    /// Gets a snapshot of what the current camera room's name is and what enemies are in it
+    pub fn get_room(&self, room: u64) -> Option<Vec<String>> {
+        let room = slotmap::KeyData::from_ffi(room);
+        let room = &self.state.map.0[room.into()];
+        let (name, enemies) = room.get_cams()?; 
+
+        let mut res = vec![];
+        res.push(name.to_string());
+
+        for enemy in enemies {
+            res.push(self.enemies[*enemy].get_name().to_string())
+        }
+
+        Some(res)
+    }
+
     /// Toggles the camera state
     pub fn toggle_cameras(&mut self) {
         self.state.toggle_cameras();
@@ -102,6 +118,16 @@ impl Game {
     /// Close the right door
     pub fn toggle_right(&mut self) {
         self.state.toggle_door(Door::Right)
+    }
+
+    /// Is left door closed?
+    pub fn is_left_closed(&self) -> bool {
+        self.state.left_door
+    }
+
+    /// Is right door closed?
+    pub fn is_right_closed(&self) -> bool {
+        self.state.right_door
     }
 
     /// Check the current power draw
@@ -122,16 +148,6 @@ impl Game {
 
     /// Render the current map
     pub fn render(&mut self) -> String {
-        let truth_table = (self.state.left_door, self.state.right_door);
-        let message = match truth_table {
-            (true, true) => "Both Doors Closed",
-            (true, _) => "Left Door Closed",
-            (_, true) => "Right Door Closed",
-            _ => "Both Doors Open",
-        };
-
-        self.state.map.0[self.state.office.root].set_name(format!("Office | {}", message));
-
         self.state.map.display()
     }
 }

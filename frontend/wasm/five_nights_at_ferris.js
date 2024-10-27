@@ -177,6 +177,16 @@ function getDataViewMemory0() {
     return cachedDataViewMemory0;
 }
 
+function getArrayJsValueFromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    const mem = getDataViewMemory0();
+    const result = [];
+    for (let i = ptr; i < ptr + 4 * len; i += 4) {
+        result.push(takeObject(mem.getUint32(i, true)));
+    }
+    return result;
+}
+
 function handleError(f, args) {
     try {
         return f.apply(this, args);
@@ -266,6 +276,27 @@ export class Game {
         return ret;
     }
     /**
+     * Gets a snapshot of what the current camera room's name is and what enemies are in it
+     * @param {bigint} room
+     * @returns {(string)[] | undefined}
+     */
+    get_room(room) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.game_get_room(retptr, this.__wbg_ptr, room);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            let v1;
+            if (r0 !== 0) {
+                v1 = getArrayJsValueFromWasm0(r0, r1).slice();
+                wasm.__wbindgen_free(r0, r1 * 4, 4);
+            }
+            return v1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
      * Toggles the camera state
      */
     toggle_cameras() {
@@ -282,6 +313,22 @@ export class Game {
      */
     toggle_right() {
         wasm.game_toggle_right(this.__wbg_ptr);
+    }
+    /**
+     * Is left door closed?
+     * @returns {boolean}
+     */
+    is_left_closed() {
+        const ret = wasm.game_is_left_closed(this.__wbg_ptr);
+        return ret !== 0;
+    }
+    /**
+     * Is right door closed?
+     * @returns {boolean}
+     */
+    is_right_closed() {
+        const ret = wasm.game_is_right_closed(this.__wbg_ptr);
+        return ret !== 0;
     }
     /**
      * Check the current power draw

@@ -70,15 +70,15 @@ impl Map {
         let mut left = Room::default();
         let mut right = Room::default();
 
-        office.set_name("Office");
-        left.set_name("Left Office Entrance");
-        right.set_name("Right Office Entrance");
+        office.set_name("office");
+        left.set_name("left_entrance");
+        right.set_name("right_entrance");
 
         let mut hallway_left = Room::default();
         let mut hallway_right = Room::default();
 
-        hallway_left.set_name("Left Hallway");
-        hallway_right.set_name("Right Hallway");
+        hallway_left.set_name("left_hallway");
+        hallway_right.set_name("right_hallway");
 
         let office = self.0.insert(office);
         let left = self.0.insert(left);
@@ -273,6 +273,15 @@ impl Room {
         }
 
         false
+    }
+
+    /// If the camera isn't disabled, returns the room's name and enemy id's inside
+    pub fn get_cams(&self) -> Option<(&str, &[EnemyId])> {
+        if !self.disabled {
+            Some((self.get_name(), &self.occupied_by))
+        } else {
+            None
+        }
     }
 
     /// Sets a room's name
