@@ -86,8 +86,6 @@
             let powered_off = false;
 
             function updateDisplay() {
-                console.log(game.render());
-                console.log(game.get_map());
                 powerDisplay.textContent = `Power: ${game.power_percent().toFixed(1)}%`;
                 if (game.power_percent() == 0.0 && !powered_off) {
                     play("./audio/shutdown.mp3");
@@ -254,12 +252,14 @@
             document
                 .getElementById("left-door-button")
                 .addEventListener("click", () => {
+                    play("./audio/door.mp3");
                     game.toggle_left();
                 });
 
             document
                 .getElementById("right-door-button")
                 .addEventListener("click", () => {
+                    play("./audio/door.mp3");
                     game.toggle_right();
                 });
 
