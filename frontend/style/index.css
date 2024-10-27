@@ -85,22 +85,6 @@ body {
     right: 20px;
 }
 
-#camera-ui {
-    position: absolute;
-    bottom: 70px;
-    right: 45px;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #32cd32;
-    padding: 20px;
-    border-radius: 5px;
-    border: 2px solid #32cd32;
-    font-size: 18px;
-    width: 300px;
-    height: 150px;
-    text-shadow: 2px 2px 4px #000;
-    z-index: 100;
-}
-
 #camera-button {
     display: none;
     position: absolute;
@@ -129,23 +113,6 @@ body {
     background-position: center;
     z-index: 1000;
     animation: shake 0.5s infinite;
-}
-
-#camera-hud {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.9);
-    color: #00ff00;
-    font-size: 36px;
-    font-weight: bold;
-    text-align: center;
-    z-index: 300;
-    justify-content: center;
-    align-items: center;
 }
 
 #camera-label {
@@ -192,4 +159,46 @@ body {
         rgba(0, 0, 0, 1) 100%
     );
     z-index: 800;
+}
+
+#camera-hud {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #00ff00;
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 300;
+    justify-content: center;
+    align-items: center;
+}
+
+#camera-status {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 200;
+}
+
+#camera-ui {
+    position: absolute;
+    bottom: 70px;
+    right: 45px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #32cd32;
+    padding: 20px;
+    border-radius: 5px;
+    border: 2px solid #32cd32;
+    font-size: 18px;
+    width: 300px;
+    height: 150px;
+    text-shadow: 2px 2px 4px #000;
+    z-index: 300;
 }

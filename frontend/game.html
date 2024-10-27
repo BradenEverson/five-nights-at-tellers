@@ -24,7 +24,7 @@
         <button id="camera-button">Camera</button>
 
         <div id="camera-hud">
-            <pre id="camera-status"></pre>
+            <canvas id="camera-status"></canvas>
             <canvas id="camera-ui"></canvas>
         </div>
         <script type="module">
@@ -45,7 +45,8 @@
             const cameraButton = document.getElementById("camera-button");
             const cameraHud = document.getElementById("camera-hud");
             const noPower = document.getElementById("vignette");
-            const cameraStatus = document.getElementById("camera-status");
+            const cameraStatusCanvas = document.getElementById("camera-status");
+            const statusCtx = cameraStatusCanvas.getContext("2d");
 
             const canvas = document.getElementById("camera-ui");
             const ctx = canvas.getContext("2d");
@@ -62,7 +63,7 @@
                 if (won) {
                     alert("You Won!");
                     clearInterval(gameInterval);
-                    location.reload();
+                    window.location.href = "/";
                 }
                 let enemy = game.is_dead();
                 if (enemy && !over) {
@@ -78,7 +79,7 @@
 
                 setTimeout(() => {
                     jumpscare.style.display = "none";
-                    location.reload();
+                    window.location.href = "/dead";
                 }, 1500);
             }
 
@@ -162,7 +163,23 @@
 
             function updateRealTimeDisplay() {
                 let cam = game.get_room(BigInt(view));
-                cameraStatus.textContent = String(cam);
+                const camImage = new Image();
+                camImage.src = "./rooms/0.png"; // Change this to the appropriate path for your image
+                camImage.onload = () => {
+                    statusCtx.clearRect(
+                        0,
+                        0,
+                        cameraStatusCanvas.width,
+                        cameraStatusCanvas.height,
+                    );
+                    statusCtx.drawImage(
+                        camImage,
+                        0,
+                        0,
+                        cameraStatusCanvas.width,
+                        cameraStatusCanvas.height,
+                    );
+                };
 
                 let left_closed = game.is_left_closed();
                 let right_closed = game.is_right_closed();

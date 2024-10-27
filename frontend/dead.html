@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./style/death.css" />
+        <title>You Died - Five Nights at Ferris's</title>
+    </head>
+
+    <body>
+        <div id="death-message">You Died</div>
+        <div id="vignette"></div>
+        <div id="return-button">Return to Main Menu</div>
+
+        <script>
+            document
+                .getElementById("return-button")
+                .addEventListener("click", () => {
+                    window.location.href = "/";
+                });
+        </script>
+    </body>
+</html>

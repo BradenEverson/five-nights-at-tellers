@@ -1,0 +1,39 @@
+body {
+    font-family: "Courier New", Courier, monospace;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    overflow: hidden;
+}
+
+#start-container {
+    text-align: center;
+    color: white;
+}
+
+#game-title {
+    font-size: 64px;
+    font-weight: bold;
+    margin-bottom: 50px;
+    text-shadow: 4px 4px 8px rgba(255, 0, 0, 0.7);
+}
+
+#start-button {
+    font-size: 28px;
+    padding: 15px 40px;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+        background-color 0.3s ease,
+        transform 0.2s;
+}
+
+#start-button:hover {
+    transform: scale(1.05);
+}
