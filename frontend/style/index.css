@@ -20,7 +20,7 @@ body {
     position: absolute;
     width: 200%;
     height: 125%;
-    background: url("../image/office.png") no-repeat;
+    background: url("../image/office-open.png") no-repeat;
     background-size: cover;
     background-position: center;
     transition: transform 0.3s ease;

@@ -13,11 +13,11 @@ pub mod enemies;
 pub mod map;
 
 /// How much power a door being closed draws
-pub const POWER_DRAW_DOOR: i32 = 100;
+pub const POWER_DRAW_DOOR: i32 = 75;
 /// How much power is idly drawn
-pub const DEFAULT_POWER_DRAW: i32 = 10;
+pub const DEFAULT_POWER_DRAW: i32 = 5;
 /// How much power being on the cameras draws
-pub const CAMERA_ON_DRAW: i32 = 25;
+pub const CAMERA_ON_DRAW: i32 = 15;
 /// How much power you start with
 pub const INITIAL_POWER: i32 = 500_000;
 /// How many game ticks we need to win
@@ -44,7 +44,7 @@ impl Default for Game {
         // Register all enemies we want in the game
         let enemy_registry: Vec<Freak> = vec![Freak::new(
             "teller",
-            200..350,
+            800..1200,
             StraightPathBehavior::default(),
         )];
 

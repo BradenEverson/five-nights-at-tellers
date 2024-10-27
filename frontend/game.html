@@ -148,9 +148,41 @@
                 });
             }
 
-            function updateCams() {
-                let room = game.get_room(BigInt(view));
-                cameraStatus.textContent = String(room);
+            const images = {
+                open: new Image(),
+                both: new Image(),
+                left: new Image(),
+                right: new Image(),
+            };
+
+            images.open.src = "./image/office-open.png";
+            images.both.src = "./image/office-both.png";
+            images.left.src = "./image/office-left.png";
+            images.right.src = "./image/office-right.png";
+
+            function updateRealTimeDisplay() {
+                let cam = game.get_room(BigInt(view));
+                cameraStatus.textContent = String(cam);
+
+                let left_closed = game.is_left_closed();
+                let right_closed = game.is_right_closed();
+
+                let roomImage = images.open.src;
+                if (left_closed && right_closed) {
+                    roomImage = images.both.src;
+                } else if (left_closed) {
+                    roomImage = images.left.src;
+                } else if (right_closed) {
+                    roomImage = images.right.src;
+                }
+
+                const currentBackground = office.style.backgroundImage;
+                const newBackground = `url("${roomImage}")`;
+
+                if (currentBackground !== newBackground) {
+                    office.style.backgroundImage = newBackground;
+                    office.style.backgroundRepeat = "no-repeat";
+                }
             }
 
             canvas.addEventListener("click", (e) => {
@@ -216,7 +248,7 @@
 
             const tickInterval = setInterval(tickGame, 20);
             const updateInterval = setInterval(updateDisplay, 1500);
-            const updateCamState = setInterval(updateCams, 750);
+            const updateCamState = setInterval(updateRealTimeDisplay, 50);
             updateDisplay();
             drawRooms();
         </script>
