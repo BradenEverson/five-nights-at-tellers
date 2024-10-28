@@ -1,0 +1,15 @@
+{
+  "name": "five-nights-at-ferris",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "five_nights_at_ferris_bg.wasm",
+    "five_nights_at_ferris.js",
+    "five_nights_at_ferris.d.ts"
+  ],
+  "main": "five_nights_at_ferris.js",
+  "types": "five_nights_at_ferris.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
