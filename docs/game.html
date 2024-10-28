@@ -77,7 +77,7 @@
                 let won = game.tick();
                 if (won) {
                     alert("You Won!");
-                    window.location.href = "/";
+                    window.location.href = "./";
                 }
                 let enemy = game.is_dead();
                 if (enemy && !over) {
@@ -93,7 +93,7 @@
 
                 setTimeout(() => {
                     jumpscare.style.display = "none";
-                    window.location.href = "/dead";
+                    window.location.href = "./dead";
                 }, 1500);
             }
 
