@@ -28,8 +28,24 @@ pub struct CameraNode {
 
 impl CameraNode {
     /// Generates a new camera node
-    pub fn new<NAME: Into<String>>(id: RoomId, name: NAME, x: f32, y: f32, width: f32, height: f32, connected_to: Vec<RoomId>) -> Self {
-        Self { id, name: name.into(), x, y, width, height, connected_to }
+    pub fn new<NAME: Into<String>>(
+        id: RoomId,
+        name: NAME,
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+        connected_to: Vec<RoomId>,
+    ) -> Self {
+        Self {
+            id,
+            name: name.into(),
+            x,
+            y,
+            width,
+            height,
+            connected_to,
+        }
     }
 }
 
@@ -49,7 +65,15 @@ impl Map {
         while let Some(room) = queue.pop_front() {
             // Find self's coord, create CameraNode from that and push it to vec
             let (node_x, node_y) = coords[&room];
-            let node = CameraNode::new(room, self.0[room].get_name(), node_x, node_y, 12.0, 12.0, self.0[room].conencts_to.clone());
+            let node = CameraNode::new(
+                room,
+                self.0[room].get_name(),
+                node_x,
+                node_y,
+                12.0,
+                12.0,
+                self.0[room].conencts_to.clone(),
+            );
             room_nodes.push(node);
 
             let mut local_x = -16.0;
@@ -64,7 +88,7 @@ impl Map {
                     queue.push_back(*connection)
                 }
             }
-            
+
             seen.insert(room);
         }
 

@@ -3,7 +3,10 @@
 
 use std::collections::HashMap;
 
-use enemies::{impls::generic::StraightPathBehavior, EnemyId, Freak};
+use enemies::{
+    impls::{generic::StraightPathBehavior, random::RandomBehavior},
+    EnemyId, Freak,
+};
 use map::{Map, RoomId, RootRoomInfo};
 use rand::{rngs::ThreadRng, seq::SliceRandom, thread_rng, Rng};
 use slotmap::SlotMap;
@@ -39,14 +42,15 @@ pub struct Game {
 impl Default for Game {
     fn default() -> Self {
         let mut rng = thread_rng();
+        let move_rng = thread_rng();
+
         let mut enemies: SlotMap<EnemyId, Freak> = SlotMap::default();
 
         // Register all enemies we want in the game
-        let enemy_registry: Vec<Freak> = vec![Freak::new(
-            "teller",
-            800..1200,
-            StraightPathBehavior::default(),
-        )];
+        let enemy_registry: Vec<Freak> = vec![
+            Freak::new("ferris", 800..1200, StraightPathBehavior::default()),
+            Freak::new("gopher", 300..800, RandomBehavior::new(move_rng)),
+        ];
 
         for enemy in enemy_registry {
             enemies.insert(enemy);
@@ -93,7 +97,7 @@ impl Game {
     pub fn get_room(&self, room: u64) -> Option<Vec<String>> {
         let room = slotmap::KeyData::from_ffi(room);
         let room = &self.state.map.0[room.into()];
-        let (_, enemies) = room.get_cams()?; 
+        let (_, enemies) = room.get_cams()?;
 
         let mut res = vec![];
 

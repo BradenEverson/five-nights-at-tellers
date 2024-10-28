@@ -264,6 +264,11 @@ impl Room {
         self.conencts_to.push(room)
     }
 
+    /// Returns all rooms connected to this room
+    pub fn connections(&self) -> &[RoomId] {
+        &self.conencts_to
+    }
+
     /// Checks if the room connects to any of the id's provided
     pub fn connects_to_any(&self, connections: &[&RoomId]) -> bool {
         for room in &self.conencts_to {

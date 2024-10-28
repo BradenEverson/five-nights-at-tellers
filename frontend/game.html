@@ -57,6 +57,8 @@
                 audio.play();
             }
 
+            play("./audio/music.mp3");
+
             let over = false;
 
             function tickGame() {
@@ -154,6 +156,10 @@
                 right: new Image(),
             };
 
+            let spawnX = 125;
+            let spawnY = 70;
+            let size = 50;
+
             images.open.src = "./image/office-open.png";
             images.both.src = "./image/office-both.png";
             images.left.src = "./image/office-left.png";
@@ -178,12 +184,17 @@
                         cameraStatusCanvas.height,
                     );
                 };
-
                 cam.forEach((enemy_name) => {
                     const enemyImage = new Image();
                     enemyImage.src = `./enemies/${enemy_name}/cams.png`;
                     enemyImage.onload = () => {
-                        statusCtx.drawImage(enemyImage, 125, 70, 50, 50);
+                        statusCtx.drawImage(
+                            enemyImage,
+                            spawnX,
+                            spawnY,
+                            size,
+                            size,
+                        );
                     };
                 });
 
@@ -208,6 +219,16 @@
                 }
             }
 
+            cameraStatusCanvas.addEventListener("click", (e) => {
+                const rect = cameraStatusCanvas.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+
+                spawnX = clickX;
+                spawnY = clickY;
+                console.log(`(${clickX}, ${clickY})`);
+            });
+
             canvas.addEventListener("click", (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const clickX = e.clientX - rect.left - 25;
@@ -225,6 +246,15 @@
                         drawRooms();
                     }
                 });
+            });
+
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "ArrowUp") {
+                    size -= 1;
+                } else if (event.key === "ArrowDown") {
+                    size += 1;
+                }
+                console.log(size);
             });
 
             document.addEventListener("mousemove", (e) => {
@@ -264,6 +294,7 @@
                 });
 
             cameraButton.addEventListener("click", () => {
+                play("./audio/camera.mp3");
                 game.toggle_cameras();
                 if (cameraHud.style.display == "flex") {
                     cameraHud.style.display = "none";
