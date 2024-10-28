@@ -60,13 +60,13 @@ impl Freak {
     }
 
     /// Returns the enemy's name
-    pub fn get_name(&self) -> &str {
+    pub fn get_name(&self) -> &'static str {
         self.name
     }
 
     /// When it's an enemies turn, goes through all of the logic and game mutation given that
     /// generated Action
-    pub fn tick(&mut self, id: EnemyId, curr_game: &mut GameState) {
+    pub fn tick<RNG: Rng>(&mut self, id: EnemyId, curr_game: &mut GameState, rng: &mut RNG) {
         match self.state {
             State::Dormant => {
                 // Just wake up
@@ -80,8 +80,8 @@ impl Freak {
 
                 for action in actions {
                     match action {
-                        Action::Move(move_to) => curr_game.move_enemy(id, move_to),
-                        Action::Attack => curr_game.attack(id),
+                        Action::Move(move_to) => curr_game.move_enemy(id, move_to, rng),
+                        Action::Attack => curr_game.attack(id, rng),
                         Action::Special(side_effect) => side_effect.do_something(curr_game),
                         Action::Nothing => {}
                     }

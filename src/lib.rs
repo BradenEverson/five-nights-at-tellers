@@ -4,8 +4,7 @@
 use std::collections::HashMap;
 
 use enemies::{
-    impls::{generic::StraightPathBehavior, random::RandomBehavior},
-    EnemyId, Freak,
+    impls::{generic::StraightPathBehavior, random::RandomBehavior}, EnemyId, Freak
 };
 use map::{Map, RoomId, RootRoomInfo};
 use rand::{rngs::ThreadRng, seq::SliceRandom, thread_rng, Rng};
@@ -102,7 +101,9 @@ impl Game {
         let mut res = vec![];
 
         for enemy in enemies {
-            res.push(self.enemies[*enemy].get_name().to_string())
+            let name = self.enemies[*enemy].get_name();
+
+            res.push(name.to_string());
         }
 
         Some(res)
@@ -168,6 +169,8 @@ pub struct GameState {
     pub office: RootRoomInfo,
     /// Where enemies can be spawned
     pub spawn_points: Vec<RoomId>,
+    /// Where enemies are located in the camera view
+    pub locations: HashMap<EnemyId, (f32, f32)>,
     /// If the left door is closed
     left_door: bool,
     /// If the right door is closed
@@ -196,6 +199,7 @@ impl Default for GameState {
             map,
             office,
             spawn_points,
+            locations: HashMap::new(),
             power: INITIAL_POWER,
             left_door: false,
             right_door: false,
@@ -226,6 +230,21 @@ impl GameState {
         }
         self
     }
+
+    /// Generates a random location for an enemy and reassigns that in the lookup table
+    pub fn generate_coords<RNG: Rng>(&mut self, enemy: EnemyId, rng: &mut RNG) -> (f32, f32) {
+        let x = rng.gen_range(20..=230);
+        let y = rng.gen_range(10..=90);
+
+        self.locations.insert(enemy, (x as f32, y as f32));
+        self.locations[&enemy]
+    }
+
+    /// Returns an enemy's current location on the cameras
+    pub fn get_coords(&self, enemy: &EnemyId) -> (f32, f32) {
+        self.locations[enemy]
+    }
+
     /// Ticks through all enemy behaviors if it's time
     pub fn tick<RNG: Rng>(&mut self, enemies: &mut SlotMap<EnemyId, Freak>, rng: &mut RNG) -> bool {
         self.ticks += 1;
@@ -241,7 +260,7 @@ impl GameState {
             if let Some(time) = self.cooldowns.get(&id) {
                 if self.ticks % time == 0 {
                     // It's action time
-                    enemy.tick(id, self);
+                    enemy.tick(id, self, rng);
                 }
             } else {
                 let new_cooldown = enemy.gen_cooldown(rng);
@@ -312,20 +331,21 @@ impl GameState {
     }
 
     /// Moves an enemy from their current room to the desired room if possible
-    pub(crate) fn move_enemy(&mut self, freak: EnemyId, to: RoomId) {
+    pub(crate) fn move_enemy<RNG: Rng>(&mut self, freak: EnemyId, to: RoomId, rng: &mut RNG) {
         let room = self.map.get_enemy_room(freak);
         if let Some(room) = room {
             self.map.move_enemy_out_of(room, freak)
         }
+        self.generate_coords(freak, rng);
         self.map.move_enemy_to(to, freak);
     }
 
     /// Attacks with a given enemy if possible
-    pub(crate) fn attack(&mut self, attacker: EnemyId) {
+    pub(crate) fn attack<RNG: Rng>(&mut self, attacker: EnemyId, rng: &mut RNG) {
         if self.attack_possible(attacker) {
-            self.move_enemy(attacker, self.office.root);
+            self.move_enemy(attacker, self.office.root, rng);
         } else {
-            self.move_enemy(attacker, self.spawn_points[0])
+            self.move_enemy(attacker, *self.spawn_points.choose(rng).unwrap(), rng)
         }
     }
 

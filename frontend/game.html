@@ -52,6 +52,19 @@
             const canvas = document.getElementById("camera-ui");
             const ctx = canvas.getContext("2d");
 
+            let spawnLocations = new Map();
+
+            for (let i = 0; i < 15; i++) {
+                let locations = [];
+                for (let j = 0; j < 5; j++) {
+                    const x = Math.floor(Math.random() * (230 - 20 + 1)) + 20;
+                    const y = Math.floor(Math.random() * (90 - 10 + 1)) + 10;
+                    const size = Math.floor(Math.random() * (70 - 20 + 1)) + 20;
+                    locations[j] = [x, y, size];
+                }
+                spawnLocations.set(i, locations);
+            }
+
             function play(file) {
                 var audio = new Audio(file);
                 audio.play();
@@ -156,10 +169,6 @@
                 right: new Image(),
             };
 
-            let spawnX = 125;
-            let spawnY = 70;
-            let size = 50;
-
             images.open.src = "./image/office-open.png";
             images.both.src = "./image/office-both.png";
             images.left.src = "./image/office-left.png";
@@ -183,19 +192,34 @@
                         cameraStatusCanvas.width,
                         cameraStatusCanvas.height,
                     );
+
+                    const overlay = new Image();
+                    overlay.src = "./rooms/overlay.png";
+                    overlay.onload = () => {
+                        statusCtx.drawImage(
+                            overlay,
+                            0,
+                            0,
+                            cameraStatusCanvas.width,
+                            cameraStatusCanvas.height,
+                        );
+                    };
                 };
+                let i = 0;
                 cam.forEach((enemy_name) => {
+                    const location = spawnLocations.get(view)[i];
+                    console.log(location);
+
+                    const x = location[0];
+                    const y = location[1];
+                    const size = location[2];
+
                     const enemyImage = new Image();
                     enemyImage.src = `./enemies/${enemy_name}/cams.png`;
                     enemyImage.onload = () => {
-                        statusCtx.drawImage(
-                            enemyImage,
-                            spawnX,
-                            spawnY,
-                            size,
-                            size,
-                        );
+                        statusCtx.drawImage(enemyImage, x, y, size, size);
                     };
+                    i++;
                 });
 
                 let left_closed = game.is_left_closed();
@@ -219,16 +243,6 @@
                 }
             }
 
-            cameraStatusCanvas.addEventListener("click", (e) => {
-                const rect = cameraStatusCanvas.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const clickY = e.clientY - rect.top;
-
-                spawnX = clickX;
-                spawnY = clickY;
-                console.log(`(${clickX}, ${clickY})`);
-            });
-
             canvas.addEventListener("click", (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const clickX = e.clientX - rect.left - 25;
@@ -246,15 +260,6 @@
                         drawRooms();
                     }
                 });
-            });
-
-            document.addEventListener("keydown", (event) => {
-                if (event.key === "ArrowUp") {
-                    size -= 1;
-                } else if (event.key === "ArrowDown") {
-                    size += 1;
-                }
-                console.log(size);
             });
 
             document.addEventListener("mousemove", (e) => {
