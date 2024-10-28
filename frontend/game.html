@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="./style/index.css" />
-        <title>Five Nights at Ferris's</title>
+        <title>Five Nights at Teller's</title>
     </head>
 
     <body>
@@ -13,11 +13,10 @@
 
         <div id="office-container">
             <div id="office"></div>
-            <button id="left-door-button" class="door-button">Left Door</button>
-            <button id="right-door-button" class="door-button">
-                Right Door
-            </button>
+            <button id="left-door-button" class="door-button">Door</button>
+            <button id="right-door-button" class="door-button">Door</button>
             <div id="jumpscare"></div>
+            <div id="slight-vignette"></div>
             <div id="vignette"></div>
         </div>
 
@@ -104,6 +103,7 @@
                 powerDisplay.textContent = `Power: ${game.power_percent().toFixed(1)}%`;
                 if (game.power_percent() == 0.0 && !powered_off) {
                     play("./audio/shutdown.mp3");
+                    setTimeout(() => play("./audio/deadsong.mp3"), 3000);
                     powered_off = true;
 
                     noPower.style.display = "block";
@@ -256,6 +256,7 @@
                         clickY >= room.x + 50 &&
                         clickY <= room.x + 50 + room.height
                     ) {
+                        play("./audio/select.mp3");
                         view = room.id.idx;
                         drawRooms();
                     }

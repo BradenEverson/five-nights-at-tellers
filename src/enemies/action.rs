@@ -22,6 +22,18 @@ pub enum Action {
     Nothing,
 }
 
+impl PartialEq for Action {
+    fn eq(&self, other: &Self) -> bool {
+        matches!(
+            (self, other),
+            (Action::Attack, Action::Attack)
+                | (Action::Move(_), Action::Move(_))
+                | (Action::Special(_), Action::Special(_))
+                | (Action::Nothing, Action::Nothing)
+        )
+    }
+}
+
 /// A generic side effect that an enemy may cause to the game state. An example could be disabling
 /// cameras, turning back time, spawn a friend, etc..
 pub trait SideEffect {

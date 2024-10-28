@@ -161,6 +161,21 @@ body {
     z-index: 800;
 }
 
+#slight-vignette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    background: radial-gradient(
+        circle,
+        rgba(0, 0, 0, 0.3) 80%,
+        rgba(0, 0, 0, 0.6) 100%
+    );
+    z-index: 800;
+}
+
 #camera-hud {
     display: none;
     position: absolute;

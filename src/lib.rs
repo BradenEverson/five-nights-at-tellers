@@ -4,7 +4,8 @@
 use std::collections::HashMap;
 
 use enemies::{
-    impls::{generic::StraightPathBehavior, random::RandomBehavior}, EnemyId, Freak
+    impls::{double::DoubleBehavior, generic::StraightPathBehavior, random::RandomBehavior},
+    EnemyId, Freak,
 };
 use map::{Map, RoomId, RootRoomInfo};
 use rand::{rngs::ThreadRng, seq::SliceRandom, thread_rng, Rng};
@@ -47,8 +48,13 @@ impl Default for Game {
 
         // Register all enemies we want in the game
         let enemy_registry: Vec<Freak> = vec![
-            Freak::new("ferris", 800..1200, StraightPathBehavior::default()),
-            Freak::new("gopher", 300..800, RandomBehavior::new(move_rng)),
+            Freak::new("teller", 800..1200, StraightPathBehavior::default()),
+            Freak::new(
+                "remington",
+                800..2500,
+                DoubleBehavior::new(StraightPathBehavior::default()),
+            ),
+            Freak::new("frank", 300..800, RandomBehavior::new(move_rng)),
         ];
 
         for enemy in enemy_registry {
