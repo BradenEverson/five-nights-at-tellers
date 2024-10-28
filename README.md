@@ -1,6 +1,8 @@
 # Five Night's At Tellers 👻🐗
 A scary game where my dog hunts me 
 
+Play it [here](https://bradeneverson.github.io/five-nights-at-tellers/)
+
 ## Who Is Teller?
 Teller is my dog. He's very nice most of the time but does have a knack for stalking me across hallways and sneaking up to attack. That's what inspired this Five Night's At Freddy's style game!
 
