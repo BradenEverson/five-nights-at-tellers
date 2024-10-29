@@ -11,9 +11,15 @@ Teller is my dog. He's very nice most of the time but does have a knack for stal
 <hr/>
 Five Night's At Teller's is a WASM-backed game with all state being managed in Rust through the `wasm-pack` family of toolings. The frontend essentially is just communicating with this state and rendering appropriate images and sound effects when desired effects have to come up.
 
+![office](https://github.com/user-attachments/assets/4dfa688d-146e-4e1a-ab23-b1d6c87ece65)
+
+
 ## Rules:
 
 The rules of the game are relatively straightforward: don't let any of my dogs get into your office! To do so, you can view where the characters are positioned on a map relative to you by using the complementary security cameras. If anybody is directly outside of your room, you may want to close the door corresponding to that area. Keeping doors closed and surfing the cameras come at the cost of additional power consumption, however, and may cause you to lose all energy before the end of the night, leaving you defenseless.
+
+![doggies](https://github.com/user-attachments/assets/7b80b3ff-9631-49bc-8513-32dcd2d29581)
+
 
 ## Stuff I Enjoy about Designing the Code:
 * **Modular Enemy AI**: Enemy behavior is defined by a trait `EnemyBehavior` that has a single `tick` function and returns a Vector of actions that enemy will take in it's turn. The `tick` function has access to a reference to the current state, meaning it can use any context it wants to make complex decisions. The game state itself is then only aware of a non-owned Vector of trait objects allowing every enemy to behave differently. A few examples of current trait implementations that exist for different enemies include a pathfinding behavior that attempts to go straight to the player, a randomized behavior that just picks a random room to wander into, and a delayed "double moving" behavior that takes longer to perform actions but does 2 actions sequentially when it does.
