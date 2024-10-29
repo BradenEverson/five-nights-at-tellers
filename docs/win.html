@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./style/win-screen.css" />
+        <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+        <title>You Win - Five Nights at Teller's</title>
+    </head>
+
+    <body>
+        <div id="win-container">
+            <h1 id="win-title">You Win!</h1>
+            <div id="play-again-button">Play Again</div>
+        </div>
+
+        <div class="confetti-container"></div>
+
+        <script>
+            document
+                .getElementById("play-again-button")
+                .addEventListener("click", () => {
+                    window.location.href = "./";
+                });
+
+            const confettiContainer = document.querySelector(
+                ".confetti-container",
+            );
+            const confettiColors = [
+                "#ffcc00",
+                "#ff5733",
+                "#33ff57",
+                "#33ccff",
+                "#ff33cc",
+            ];
+
+            for (let i = 0; i < 300; i++) {
+                const confettiPiece = document.createElement("div");
+                confettiPiece.classList.add("confetti");
+                confettiPiece.style.backgroundColor =
+                    confettiColors[
+                        Math.floor(Math.random() * confettiColors.length)
+                    ];
+                confettiPiece.style.left = `${Math.random() * 100}vw`;
+                confettiPiece.style.animationDelay = `${Math.random() * 5}s`;
+                confettiPiece.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confettiContainer.appendChild(confettiPiece);
+            }
+        </script>
+    </body>
+</html>

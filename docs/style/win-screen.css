@@ -1,0 +1,82 @@
+body {
+    font-family: "Courier New", Courier, monospace;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    overflow: hidden;
+}
+
+#win-container {
+    text-align: center;
+    color: white;
+    z-index: 10;
+    position: relative;
+}
+
+#win-title {
+    font-size: 64px;
+    font-weight: bold;
+    margin-bottom: 50px;
+    text-shadow: 4px 4px 8px rgba(255, 255, 0, 0.7);
+    animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 4px 4px 8px rgba(255, 255, 0, 0.7);
+    }
+    to {
+        text-shadow: 4px 4px 16px rgba(255, 0, 255, 1);
+    }
+}
+
+#play-again-button {
+    font-size: 28px;
+    padding: 15px 40px;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: none;
+    transition:
+        background-color 0.3s ease,
+        transform 0.2s;
+    text-shadow: 4px 4px 8px rgba(255, 255, 0, 0.7);
+    animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+#play-again-button:hover {
+    transform: scale(1.05);
+}
+
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 30px;
+    background-color: #ffcc00;
+    animation: fall 4s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes fall {
+    from {
+        transform: translateY(-100vh);
+    }
+    to {
+        transform: translateY(100vh);
+    }
+}

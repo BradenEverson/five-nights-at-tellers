@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" href="./favicon.ico" type="image/x-icon" />
         <link rel="stylesheet" href="./style/index.css" />
         <title>Five Nights at Teller's</title>
     </head>
@@ -76,8 +77,7 @@
             function tickGame() {
                 let won = game.tick();
                 if (won) {
-                    alert("You Won!");
-                    window.location.href = "./";
+                    window.location.href = "./win";
                 }
                 let enemy = game.is_dead();
                 if (enemy && !over) {
